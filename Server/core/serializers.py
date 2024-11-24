@@ -3,14 +3,14 @@ from rest_framework.exceptions import ValidationError
 from .models import UserProfile
 
 class UserProfileSerializer(serializers.ModelSerializer):
-    follower_count = serializers.SerializerMethodField()
+    followers_count = serializers.SerializerMethodField()
     following_count = serializers.SerializerMethodField()
 
     class Meta:
         model = UserProfile
-        fields = ["username", "bio", "avatar", ]
+        fields = ["user_id", "username", "bio", "avatar", ]
     
-    def get_follower_count(self, obj):
+    def get_followers_count(self, obj):
         return obj.followers.count()
     
     def get_following_count(self, obj):

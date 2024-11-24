@@ -4,7 +4,8 @@ from rest_framework.exceptions import ValidationError
 
 
 class UserProfile(AbstractUser):
-    username = models.CharField(max_length=50, unique=True, primary_key=True)
+    user_id = models.AutoField(primary_key=True)
+    username = models.CharField(max_length=50, unique=True)
     bio = models.TextField(blank=True, null=True)
     avatar = models.ImageField(upload_to="avatar_image/", blank=True)
     followers = models.ManyToManyField(

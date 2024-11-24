@@ -1,3 +1,51 @@
-from django.shortcuts import render
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.exceptions import NotFound
+from rest_framework import status
+from .models import UserProfile
+from .serializers import UserProfileSerializer
 
-# Create your views here.
+
+class UserProfileApiView(APIView):
+
+    def get(self, request, user_id):
+
+        if not user_id.is_digit():
+            return Response(
+                {
+                    "error": "invalid_user_id",
+                    "detail": "The provided user_id must be a numeric value.",
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        try:
+            user = UserProfile.objects.get(user_id=user_id)
+            try:
+                serializer = UserProfileSerializer(user)
+                return Response(serializer.data, status=status.HTTP_200_OK)
+
+            except Exception as e:
+                return Response(
+                    {
+                        "error": "serialization_error",
+                        "detail": f"An error occurred while serializing the user data: {str(e)}",
+                    },
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                )
+
+        except UserProfile.DoesNotExist:
+            raise NotFound(
+                {
+                    "error": "user_not_found",
+                    "detail": f"The requested user with user_id {user_id} does not exist.",
+                }
+            )
+        except Exception as e:
+            return Response(
+                {
+                    "error": "internal_server_error",
+                    "detail": "An unexpected error occurred. Please try again later.",
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
