@@ -9,7 +9,7 @@ class UserProfile(AbstractUser):
     bio = models.TextField(blank=True, null=True)
     avatar = models.ImageField(upload_to="avatar_image/", blank=True)
     followers = models.ManyToManyField(
-        "self", symmetrical=False, related_name="following"
+        "self", symmetrical=False, related_name="following", blank=True
     )
 
 

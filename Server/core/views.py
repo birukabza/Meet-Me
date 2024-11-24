@@ -8,19 +8,10 @@ from .serializers import UserProfileSerializer
 
 class UserProfileApiView(APIView):
 
-    def get(self, request, user_id):
-
-        if not user_id.is_digit():
-            return Response(
-                {
-                    "error": "invalid_user_id",
-                    "detail": "The provided user_id must be a numeric value.",
-                },
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+    def get(self, request, username):
 
         try:
-            user = UserProfile.objects.get(user_id=user_id)
+            user = UserProfile.objects.get(username=username)
             try:
                 serializer = UserProfileSerializer(user)
                 return Response(serializer.data, status=status.HTTP_200_OK)
@@ -38,7 +29,7 @@ class UserProfileApiView(APIView):
             raise NotFound(
                 {
                     "error": "user_not_found",
-                    "detail": f"The requested user with user_id {user_id} does not exist.",
+                    "detail": f"The requested user with user_id {username} does not exist.",
                 }
             )
         except Exception as e:
