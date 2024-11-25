@@ -1,12 +1,13 @@
+import createRouter from './routes/Routes'
+import { RouterProvider } from 'react-router-dom'
 
-import './App.css'
 
 function App() {
-
+  const router = createRouter();
   return (
-    <>
-      <h1 className='text-green-400 font-extralight'> Hello </h1>
-    </>
+    <div className='flex'>
+      <RouterProvider router={router}/>
+    </div>
   )
 }
 

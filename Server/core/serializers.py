@@ -1,5 +1,4 @@
 from rest_framework import serializers
-from rest_framework.exceptions import ValidationError
 from .models import UserProfile
 
 
@@ -27,4 +26,4 @@ class UserProfileSerializer(serializers.ModelSerializer):
     def validate_bio(self, value):
         if value:
             if len(value) > 600:
-                raise ValidationError("Bio can not be greater than 600 characters")
+                raise serializers.ValidationError("Bio can not be greater than 600 characters")
