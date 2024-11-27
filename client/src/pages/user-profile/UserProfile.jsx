@@ -1,15 +1,21 @@
 import { FaPlus } from "react-icons/fa";
+import { IoPersonCircleSharp } from "react-icons/io5";
 
-const UserProfile = () => {
+
+const UserProfile = ({avatarUrl}) => {
     return (
-        <div className="max-w-md mx-auto p-6 flex flex-row gap-10">
+        <div className="ml-40 p-6 flex flex-row gap-12 max-w-5xl w-full">
             <div className="flex justify-center  mb-10">
-                <div className="relative w-32 h-32">
-                    <img
-                        src="http://127.0.0.1:8000/api/media/avatar_image/photo_2023-11-18_16-34-54.jpg"
-                        alt="User Avatar"
-                        className="w-full h-full rounded-full object-cover border-4 border-primary shadow-md"
-                    />
+                <div className="relative size-48">
+                {avatarUrl ? (
+                        <img
+                            src={avatarUrl}
+                            alt="User Avatar"
+                            className="w-full h-full rounded-full object-cover border-4 border-primary shadow-md"
+                        />
+                    ) : (
+                        <IoPersonCircleSharp className="w-full h-full text-gray-400" />
+                    )}
 
                     <div className="absolute bottom-0 right-0 w-8 h-8 bg-black text-white rounded-full flex items-center justify-center shadow-lg cursor-pointer">
                         <FaPlus />
@@ -21,7 +27,7 @@ const UserProfile = () => {
 
             </div>
 
-            <div className="flex flex-col justify-start">
+            <div className="flex flex-col justify-start gap-3 pt-5">
 
                 <div className="flex justify-start mb-3 ">
                     <button className="px-4 py-2 bg-primary text-white rounded-lg shadow hover:shadow-2xl hover:bg-primaryLight">
@@ -29,7 +35,7 @@ const UserProfile = () => {
                     </button>
                 </div>
 
-                <div className="flex gap-3 justify-center text-white">
+                <div className="flex gap-12 justify-center text-white">
                     <div className="flex gap-1">
 
                         <span>2</span>
