@@ -10,7 +10,7 @@ const createRouter = () =>
       element: <Layout />,
       children: [
         {
-          path: "profile",
+          path: "profile/:username",
           element: <UserProfile />,
         },  
       ],

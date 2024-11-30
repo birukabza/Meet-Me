@@ -4,7 +4,7 @@
 
 @layer components{
     .side-bar-icons{
-        @apply relative flex items-center justify-center size-16 my-2 mx-auto shadow-xl text-secondary bg-primaryLight hover:bg-secondary hover:text-white rounded-3xl hover:rounded-xl transition-all duration-300 ease-linear cursor-pointer;
+        @apply relative flex items-center justify-center size-16 my-2 mx-auto shadow-xl text-secondary bg-primaryLight2 hover:bg-secondary hover:text-white rounded-3xl hover:rounded-xl transition-all duration-300 ease-linear cursor-pointer;
     }
     .side-bar-side-text{
         @apply absolute w-auto p-2 m-3 min-w-max left-20 rounded-lg shadow-lg text-white bg-black font-bold transition-all duration-100 scale-0 origin-left;
