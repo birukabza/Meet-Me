@@ -3,12 +3,19 @@ from rest_framework.response import Response
 from rest_framework.exceptions import NotFound
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from rest_framework_simplejwt.exceptions import (
+    AuthenticationFailed,
+    InvalidToken,
+    TokenError,
+)
 from .models import UserProfile
 from .serializers import UserProfileSerializer
 
 
 class UserProfileApiView(APIView):
     permission_classes = [IsAuthenticated]
+
     def get(self, request, username):
 
         try:
@@ -20,6 +27,7 @@ class UserProfileApiView(APIView):
             except Exception as e:
                 return Response(
                     {
+                        "success": False,
                         "error": "serialization_error",
                         "detail": f"An error occurred while serializing the user data: {str(e)}",
                     },
@@ -29,6 +37,7 @@ class UserProfileApiView(APIView):
         except UserProfile.DoesNotExist:
             raise NotFound(
                 {
+                    "success": False,
                     "error": "user_not_found",
                     "detail": f"The requested user with user_id {username} does not exist.",
                 }
@@ -36,8 +45,128 @@ class UserProfileApiView(APIView):
         except Exception as e:
             return Response(
                 {
+                    "success": False,
                     "error": "internal_server_error",
                     "detail": "An unexpected error occurred. Please try again later.",
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+
+class CustomTokenObtainPairView(TokenObtainPairView):
+    def post(self, request, *args, **kwargs):
+
+        try:
+
+            response = super().post(request, *args, **kwargs)
+            tokens = response.data
+
+            access_token = tokens.get("access")
+            refresh_token = tokens.get("refresh")
+
+            res = Response(
+                {
+                    "success": True,
+                    "message": "Login Successful",
+                },
+                status=status.HTTP_200_OK,
+            )
+
+            res.set_cookie(
+                key="access_token",
+                value=access_token,
+                httponly=True,
+                samesite="None",
+                secure=True,
+                path="/",
+            )
+            res.set_cookie(
+                key="refresh_token",
+                value=refresh_token,
+                httponly=True,
+                samesite="None",
+                secure=True,
+                path="/",
+            )
+
+            return res
+        except AuthenticationFailed as e:
+            return Response(
+                {
+                    "success": False,
+                    "error": "invalid_credentials",
+                    "detail": str(e),
+                },
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+        except Exception as e:
+            return Response(
+                {
+                    "success": False,
+                    "error": "internal_server_error",
+                    "detail": "An unexpected error occurred. Please try again later.",
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+
+class CustomTokenRefreshView(TokenRefreshView):
+    def post(self, request, *args, **kwargs):
+        try:
+            refresh_token = request.COOKIES.get("refresh_token")
+
+            if not refresh_token:
+                return Response(
+                    {"success": False, "error": "Refresh token not provided"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            request.data["refresh"] = refresh_token
+            response = super().post(request, *args, **kwargs)
+            tokens = response.data
+            new_access_token = tokens.get("access")
+
+            res = Response(
+                {
+                    "success": True,
+                    "message": "Token refreshed successfully",
+                },
+                status=status.HTTP_200_OK,
+            )
+
+            res.set_cookie(
+                key="access_token",
+                value=new_access_token,
+                httponly=True,
+                secure=True,
+                samesite="None",
+                path="/",
+            )
+
+            return res
+        except InvalidToken as e:
+            return Response(
+                {
+                    "success": False,
+                    "error": "invalid_token",
+                    "detail": str(e),
+                },
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+        except TokenError as e:
+            return Response(
+                {
+                    "success": False,
+                    "error": "token_error",
+                    "detail": str(e),
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        except Exception as e:
+            return Response(
+                {
+                    "success": False,
+                    "error": "internal_server_error",
+                    "detail": str(e),
                 },
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
