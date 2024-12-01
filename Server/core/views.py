@@ -120,6 +120,11 @@ class CustomTokenRefreshView(TokenRefreshView):
                     {"success": False, "error": "Refresh token not provided"},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
+            
+            # mutable_data = request.data.copy()
+            # mutable_data["refresh"] = refresh_token
+            # request.__full__data = mutable_data
+            
             request.data["refresh"] = refresh_token
             response = super().post(request, *args, **kwargs)
             tokens = response.data
