@@ -16,7 +16,7 @@ apiClient.interceptors.response.use(
             originalRequest._retry = true;
 
             try {
-                 await apiClient.post("token/refresh")
+                 await apiClient.post("/token/refresh")
                  return apiClient(originalRequest)
             }catch(refreshError){
                  return Promise.reject(refreshError)
@@ -29,7 +29,7 @@ apiClient.interceptors.response.use(
 
 export const fetchUserProfile = async (username) => {
     try {
-        const response = await apiClient.get(`user/${username}`);
+        const response = await apiClient.get(`/user/${username}`);
         return response.data;
     } catch (error) {
         throw (
@@ -38,6 +38,7 @@ export const fetchUserProfile = async (username) => {
         );
     }
 };
+
 
 export const login = async (username, password) => {
     try {
@@ -51,3 +52,4 @@ export const login = async (username, password) => {
         throw error;
     }
 };
+
