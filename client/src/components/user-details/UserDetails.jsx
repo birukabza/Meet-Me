@@ -1,7 +1,7 @@
 import { FaPlus } from "react-icons/fa";
 import { IoPersonCircleSharp } from "react-icons/io5";
 
-import { fetchUserProfile } from "../../api/UserApi";
+import { fetchUserProfile } from "../../api/userApi";
 
 import { useEffect } from "react";
 import { useState } from "react";
