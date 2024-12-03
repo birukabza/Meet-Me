@@ -42,6 +42,7 @@ const SignIn = () => {
                             placeholder="Enter your username"
                             onChange={(e)=>setUsername(e.target.value)}
                             name="username"
+                            value={username}
                             required
                         />
                         </label>
@@ -54,6 +55,7 @@ const SignIn = () => {
                             placeholder="Enter your password"
                             onChange={(e)=>setPassword(e.target.value)}
                             name="password"
+                            value={password}
                             required
                         />
                         </label>

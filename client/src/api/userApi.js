@@ -42,7 +42,7 @@ export const fetchUserProfile = async (username) => {
 
 export const signInApi = async (username, password) => {
     try { 
-        const response = await apiClient.post(`token/`, {
+        const response = await apiClient.post("token/", {
             username,
             password,
         });
@@ -53,6 +53,19 @@ export const signInApi = async (username, password) => {
         }
         console.log(error, "Error while logging in");
         throw error; 
+    }
+};
+
+export const signUpApi = async (userData) => {
+    try { 
+        const response = await apiClient.post("register/", userData);
+    if (response.status === 201) {
+        return response.data; 
+      }
+      throw new Error('Signup failed');
+    } catch (error) {
+      console.error('Signup Error:', error.response ? error.response.data : error.message);
+      throw error; 
     }
 };
 
