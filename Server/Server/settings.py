@@ -47,7 +47,7 @@ INSTALLED_APPS = [
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         "core.authenticate.CustomCookiesAuthentication",
-    )
+    ),
 }
 
 # Jwt

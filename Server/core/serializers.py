@@ -27,3 +27,23 @@ class UserProfileSerializer(serializers.ModelSerializer):
         if value:
             if len(value) > 600:
                 raise serializers.ValidationError("Bio can not be greater than 600 characters")
+
+class RegistrationSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True, required=True)
+
+    class Meta:
+        model = UserProfile
+        fields = ["username", "email", "first_name", "last_name", "password"]
+    
+
+    def create(self, validated_data):
+        user = UserProfile(
+            username=validated_data.get("username"),
+            email = validated_data.get("email"),
+            first_name = validated_data.get("first_name"),
+            last_name = validated_data.get("last_name") 
+        )
+
+        user.set_password(validated_data.get("password"))
+        user.save()
+        return user

@@ -1,33 +1,68 @@
 import CustomButton from "../../components/custom-button/CustomButton";
 
+import { useState } from "react";
+
+import { signInApi } from "../../api/userApi";
+
+import {useNavigate} from "react-router-dom";
+
 const SignIn = () => {
+
+    const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");
+
+    const navigate = useNavigate();
+
+    const handleSignIn = async (e) => {
+        e.preventDefault();
+        try {
+            const response = await signInApi(username, password);
+            if (response.success) {
+                navigate(`/profile/${username}`);
+            } else {
+                alert(response.message || "Invalid username or password");
+            }
+        } catch (error) {
+            alert("An unexpected error occurred. Please try again later.");
+            console.error("Sign-in error:", error);
+        }
+    };
+    
+
     return (
-        <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-blue-500 to-purple-600">
-            <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-sm">
-                <h1 className="text-3xl font-semibold text-center text-gray-800 mb-6">Sign In</h1>
-                <form className="space-y-4">
+        <div className="flex items-center justify-center min-h-screen bg-gradient-to-r ">
+            <div className="bg-primaryLight1 p-8 rounded-2xl shadow-sm shadow-white w-full max-w-sm ">
+                <h1 className="text-3xl font-semibold text-center text-secondary mb-6">Sign In</h1>
+                <form className="space-y-4" onSubmit={handleSignIn}>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700">Email Address</label>
+                        <label className="block text-sm font-medium text-white">User name
                         <input
-                            type="email"
-                            className="w-full p-3 mt-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            placeholder="Enter your email"
+                            type="text"
+                            className="w-full p-3 mt-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-secondary text-black"
+                            placeholder="Enter your username"
+                            onChange={(e)=>setUsername(e.target.value)}
+                            name="username"
+                            required
                         />
+                        </label>
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700">Password</label>
+                        <label className="block text-sm font-medium text-white">Password
                         <input
                             type="password"
-                            className="w-full p-3 mt-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full p-3 mt-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-secondary  text-black"
                             placeholder="Enter your password"
+                            onChange={(e)=>setPassword(e.target.value)}
+                            name="password"
+                            required
                         />
+                        </label>
                     </div>
-                   
-                    <CustomButton width="w-32">Sign In</CustomButton>
+                    <CustomButton type="submit" width="w-32">Sign In</CustomButton>
                 </form>
                 <div className="mt-4 text-center">
                     <p className="text-sm text-gray-600">
-                        Dont have an account?{" "}
+                        Don&apos;t have an account?{" "}
                         <a href="#" className="text-blue-500 hover:underline">Sign up</a>
                     </p>
                 </div>

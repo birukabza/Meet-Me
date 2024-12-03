@@ -1,16 +1,15 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.exceptions import NotFound
+from rest_framework.exceptions import NotFound, AuthenticationFailed
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from rest_framework_simplejwt.exceptions import (
-    AuthenticationFailed,
     InvalidToken,
     TokenError,
 )
 from .models import UserProfile
-from .serializers import UserProfileSerializer
+from .serializers import UserProfileSerializer, RegistrationSerializer
 
 
 class UserProfileApiView(APIView):
@@ -53,12 +52,32 @@ class UserProfileApiView(APIView):
             )
 
 
+class RegistrationApiView(APIView):
+    def post(self, request, *args, **kwargs):
+        serializer = RegistrationSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(
+                {"success": True, "data": serializer.data},
+                status=status.HTTP_201_CREATED,
+            )
+        
+        return Response(
+            {
+                "success": False,
+                "error": "registration_error",
+                "detail": serializer.errors,
+            },
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+
+
 class CustomTokenObtainPairView(TokenObtainPairView):
     def post(self, request, *args, **kwargs):
-
         try:
-
             response = super().post(request, *args, **kwargs)
+
             tokens = response.data
 
             access_token = tokens.get("access")
@@ -71,7 +90,6 @@ class CustomTokenObtainPairView(TokenObtainPairView):
                 },
                 status=status.HTTP_200_OK,
             )
-
             res.set_cookie(
                 key="access_token",
                 value=access_token,
@@ -88,18 +106,21 @@ class CustomTokenObtainPairView(TokenObtainPairView):
                 secure=True,
                 path="/",
             )
-
             return res
+
         except AuthenticationFailed as e:
+            print(f"error in while authenticating: {e}")
             return Response(
                 {
                     "success": False,
                     "error": "invalid_credentials",
-                    "detail": str(e),
+                    "detail": "Invalid username or password.",
                 },
                 status=status.HTTP_401_UNAUTHORIZED,
             )
+
         except Exception as e:
+            print(f"Unexpected error: {e}")
             return Response(
                 {
                     "success": False,
@@ -120,12 +141,12 @@ class CustomTokenRefreshView(TokenRefreshView):
                     {"success": False, "error": "Refresh token not provided"},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
-            
-            # mutable_data = request.data.copy()
-            # mutable_data["refresh"] = refresh_token
-            # request.__full__data = mutable_data
-            
-            request.data["refresh"] = refresh_token
+
+            mutable_data = request.data.copy()
+            mutable_data["refresh"] = refresh_token
+            request.__full__data = mutable_data
+
+            # request.data["refresh"] = refresh_token
             response = super().post(request, *args, **kwargs)
             tokens = response.data
             new_access_token = tokens.get("access")
