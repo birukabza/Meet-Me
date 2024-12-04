@@ -51,10 +51,16 @@ const UserDetails = ({username}) => {
                     ) : (
                         <IoPersonCircleSharp className="w-full h-full text-white" />
                     )}
-
+                
+                {
+                    avatarUrl ? 
+                    null
+                    :
                     <div className="absolute bottom-0 right-0 w-8 h-8 bg-black text-white rounded-full flex items-center justify-center shadow-lg cursor-pointer hover:text-secondary">
                         <FaPlus />
                     </div>
+                }
+
                     <div className="absolute -bottom-7 -left-0 text-white">
                         <span>@{username}</span>
                     </div>

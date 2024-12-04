@@ -1,12 +1,11 @@
-import createRouter from './routes/Routes'
-import { RouterProvider } from 'react-router-dom'
+import AppRouter from './routes/Routes'
+
 
 
 function App() {
-  const router = createRouter();
   return (
     <div className='flex'>
-      <RouterProvider router={router}/>
+        <AppRouter/>
     </div>
   )
 }

@@ -61,7 +61,7 @@ class RegistrationApiView(APIView):
                 {"success": True, "data": serializer.data},
                 status=status.HTTP_201_CREATED,
             )
-        
+
         return Response(
             {
                 "success": False,
@@ -71,6 +71,17 @@ class RegistrationApiView(APIView):
             status=status.HTTP_400_BAD_REQUEST,
         )
 
+
+class AuthStatusView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        return Response(
+            {
+                "message": "User is authenticated",
+                "username": request.user.username,
+            }
+        )
 
 
 class CustomTokenObtainPairView(TokenObtainPairView):

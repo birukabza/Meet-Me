@@ -69,3 +69,14 @@ export const signUpApi = async (userData) => {
     }
 };
 
+export const getAuth = async () => {
+    try {
+        const response = await apiClient.get(`/auth/status/`);
+        return response.data;
+    } catch (error) {
+        throw (
+            error.response?.data?.error ||
+            "An error occurred while authenticating"
+        );
+    }
+}
