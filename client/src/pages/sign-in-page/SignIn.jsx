@@ -15,7 +15,7 @@ const SignIn = () => {
 
     const handleSignIn = async (e) => {
         e.preventDefault();
-        await authSignIn(username, password)
+        await authSignIn(username, password);
     };
     
 

@@ -4,7 +4,7 @@ import { getAuth, signInApi } from '../api/userApi';
 
 import PropTypes from 'prop-types';
 
-import { useNavigate, useLocation } from 'react-router-dom';
+import {  useLocation } from 'react-router-dom';
 
 
 const AuthContext = createContext();
@@ -13,7 +13,6 @@ export const AuthProvider = ({children}) => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [isAuthLoading, setIsAuthLoading] = useState(true);
 
-    const navigate = useNavigate();
     const location = useLocation();
 
 
@@ -37,8 +36,9 @@ export const AuthProvider = ({children}) => {
     const authSignIn = async (username, password) => {
         try {
             const response = await signInApi(username, password);
+            console.log(response)
             if (response.success) {
-                navigate(`/profile/${username}`, {state: {from: location.pathname}})
+                window.location.href = `/profile/${username}`;
             } else {
                 alert(response.message || "Invalid username or password");
             }
