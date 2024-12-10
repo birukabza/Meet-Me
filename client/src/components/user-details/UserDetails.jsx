@@ -83,14 +83,21 @@ const UserDetails = ({ username }) => {
                         </button>
                     </div>
                 ) : (
-                    <div className="flex justify-start mb-3 ">
+                    <div className="flex justify-start mb-3 relative group w-24">
                         <button
-                            className="px-4 py-2 bg-primary text-white rounded-lg shadow hover:shadow-2xl hover:bg-secondary"
+                            className="px-4 py-2 bg-primary text-white rounded-lg shadow hover:shadow-2xl hover:bg-secondary w-28"
                             onClick={handleToggleFollow}
                         >
                             {isFollowing ? "Following" : "Follow"}
                         </button>
+
+                        <div className="absolute top-[-20px] left-[110px] bg-black text-white text-sm px-2 py-1 rounded shadow-lg scale-0 group-hover:scale-100 transition-all duration-100 origin-left">
+                            {isFollowing ? "Unfollow" : "Follow"}
+                        </div>
                     </div>
+
+
+
                 )}
 
                 <div className="flex gap-12 justify-center text-white">

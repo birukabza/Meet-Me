@@ -10,6 +10,8 @@ from rest_framework_simplejwt.exceptions import (
 )
 from .models import UserProfile
 from .serializers import UserProfileSerializer, RegistrationSerializer
+import logging
+logger = logging.getLogger(__name__)
 
 
 class UserProfileApiView(APIView):
@@ -138,7 +140,7 @@ class ToggleFollowView(APIView):
                 {
                     "success": False,
                     "error": "internal_server_error",
-                    "detail": f"An unexpected error occurred. {str(e)}",
+                    "detail": "An unexpected error occurred.",
                 },
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
@@ -213,12 +215,12 @@ class CustomTokenRefreshView(TokenRefreshView):
                     status=status.HTTP_400_BAD_REQUEST,
                 )
 
-            request.data._mutable = True
-            request.data["refresh"] = refresh_token
-            request.data._mutable = False
+            mutable_data = request.data.copy()
+            mutable_data["refresh"] = refresh_token
+            request.__full__data = mutable_data
 
             response = super().post(request, *args, **kwargs)
-
+            
             tokens = response.data
             new_access_token = tokens.get("access")
 
@@ -259,6 +261,7 @@ class CustomTokenRefreshView(TokenRefreshView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
         except Exception as e:
+            logger.error(f"Unexpected error: {e}")
             return Response(
                 {
                     "success": False,
