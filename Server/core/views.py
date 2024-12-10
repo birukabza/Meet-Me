@@ -20,8 +20,18 @@ class UserProfileApiView(APIView):
         try:
             user = UserProfile.objects.get(username=username)
             try:
-                serializer = UserProfileSerializer(user)
-                return Response(serializer.data, status=status.HTTP_200_OK)
+                serializer = UserProfileSerializer(user, many=False)
+
+                is_following = request.user in user.followers.all()
+
+                return Response(
+                    {
+                        **serializer.data,
+                        "is_self": request.user.username == user.username,
+                        "is_following": is_following,
+                    },
+                    status=status.HTTP_200_OK,
+                )
 
             except Exception as e:
                 return Response(
@@ -38,7 +48,7 @@ class UserProfileApiView(APIView):
                 {
                     "success": False,
                     "error": "user_not_found",
-                    "detail": f"The requested user with user_id {username} does not exist.",
+                    "detail": f"The requested user with username {username} does not exist.",
                 }
             )
         except Exception as e:
@@ -82,6 +92,56 @@ class AuthStatusView(APIView):
                 "username": request.user.username,
             }
         )
+
+
+class ToggleFollowView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, username):
+        try:
+            user_to_follow = UserProfile.objects.get(username=username)
+            requesting_user = request.user
+
+            if user_to_follow.user_id == requesting_user.user_id:
+                return Response(
+                    {
+                        "success": False,
+                        "error": "not_allowed",
+                        "detail": "You can't Follow/unfollow yourself",
+                    },
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+            if requesting_user in user_to_follow.followers.all():
+                user_to_follow.followers.remove(requesting_user)
+                return Response(
+                    {"success": True, "detail": "Successfully unfollowed"},
+                    status=status.HTTP_200_OK,
+                )
+            else:
+                user_to_follow.followers.add(requesting_user)
+                return Response(
+                    {"success": True, "detail": "Successfully followed"},
+                    status=status.HTTP_200_OK,
+                )
+
+        except UserProfile.DoesNotExist:
+            raise NotFound(
+                {
+                    "success": False,
+                    "error": "user_not_found",
+                    "detail": f"User  does not exist.",
+                }
+            )
+        except Exception as e:
+            return Response(
+                {
+                    "success": False,
+                    "error": "internal_server_error",
+                    "detail": f"An unexpected error occurred. {str(e)}",
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
 
 
 class CustomTokenObtainPairView(TokenObtainPairView):
@@ -153,12 +213,12 @@ class CustomTokenRefreshView(TokenRefreshView):
                     status=status.HTTP_400_BAD_REQUEST,
                 )
 
-            mutable_data = request.data.copy()
-            mutable_data["refresh"] = refresh_token
-            request.__full__data = mutable_data
+            request.data._mutable = True
+            request.data["refresh"] = refresh_token
+            request.data._mutable = False
 
-            # request.data["refresh"] = refresh_token
             response = super().post(request, *args, **kwargs)
+
             tokens = response.data
             new_access_token = tokens.get("access")
 

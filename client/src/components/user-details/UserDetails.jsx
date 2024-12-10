@@ -1,10 +1,9 @@
 import { FaPlus } from "react-icons/fa";
 import { IoPersonCircleSharp } from "react-icons/io5";
 
-import { fetchUserProfile } from "../../api/userApi";
+import { fetchUserProfile, toggleFollow } from "../../api/userApi";
 
-import { useEffect } from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { SERVER_URL } from "../../constants/constants";
 
@@ -37,6 +36,19 @@ const UserDetails = ({ username }) => {
         };
         getUserData();
     }, [username]);
+
+    const handleToggleFollow = async () => {
+        try {
+            await toggleFollow(username);
+            isFollowing
+                ? setFollowerCount((prevCount) => prevCount - 1)
+                : setFollowerCount((prevCount) => prevCount + 1);
+            setIsFollowing(!isFollowing);
+        } catch (error) {
+            console.log(error);
+            alert("error occurred while trying to follow/unfollow");
+        }
+    };
     return (
         <>
             <div className="flex justify-center  mb-10">
@@ -72,7 +84,10 @@ const UserDetails = ({ username }) => {
                     </div>
                 ) : (
                     <div className="flex justify-start mb-3 ">
-                        <button className="px-4 py-2 bg-primary text-white rounded-lg shadow hover:shadow-2xl hover:bg-secondary">
+                        <button
+                            className="px-4 py-2 bg-primary text-white rounded-lg shadow hover:shadow-2xl hover:bg-secondary"
+                            onClick={handleToggleFollow}
+                        >
                             {isFollowing ? "Following" : "Follow"}
                         </button>
                     </div>

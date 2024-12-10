@@ -8,6 +8,7 @@ from .views import (
     CustomTokenRefreshView,
     RegistrationApiView,
     AuthStatusView,
+    ToggleFollowView,
 )
 
 
@@ -17,6 +18,7 @@ urlpatterns = [
     path("token/refresh/", CustomTokenRefreshView.as_view(), name="token_refresh"),
     path("register/", RegistrationApiView.as_view(), name="register"),
     path("auth/status/", AuthStatusView.as_view(), name="auth_status"),
+    path("toggle_follow/<str:username>/", ToggleFollowView.as_view(), name="toggle_follow"),
 ]
 
 if settings.DEBUG:

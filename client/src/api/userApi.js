@@ -80,3 +80,15 @@ export const getAuth = async () => {
         );
     }
 }
+
+export const toggleFollow = async (username) => {
+    try{
+        const response = await apiClient.post(`toggle_follow/${username}/`);
+        return response.data;
+    }catch(error){
+        throw (
+            error.response?.data?.error ||
+            `An error occurred while attempting to toggle follow ${username}`
+        );
+    }
+}
