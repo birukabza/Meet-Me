@@ -8,9 +8,10 @@ from rest_framework_simplejwt.exceptions import (
     InvalidToken,
     TokenError,
 )
-from .models import UserProfile
-from .serializers import UserProfileSerializer, RegistrationSerializer
+from .models import UserProfile, Post
+from .serializers import UserProfileSerializer, RegistrationSerializer, PostSerializer
 import logging
+
 logger = logging.getLogger(__name__)
 
 
@@ -82,6 +83,39 @@ class RegistrationApiView(APIView):
             },
             status=status.HTTP_400_BAD_REQUEST,
         )
+
+
+class GetUserPostApiView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, username):
+
+        try:
+            user = UserProfile.objects.get(username=username)
+        except UserProfile.DoesNotExist:
+            raise NotFound(
+                {
+                    "success": False,
+                    "error": "user_not_found",
+                    "detail": f"The requested user with username {username} does not exist.",
+                }
+            )
+        try:
+            posts = user.posts.all()
+            serializer = PostSerializer(posts, many=True)
+            return Response(
+                {"success": True, "data": serializer.data},
+                status=status.HTTP_200_OK,
+            )
+        except Exception as e:
+            return Response(
+                {
+                    "success": False,
+                    "error": "serialization_error",
+                    "detail": f"An error occurred while serializing the user data: {str(e)}",
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
 
 
 class AuthStatusView(APIView):
@@ -220,7 +254,7 @@ class CustomTokenRefreshView(TokenRefreshView):
             request.__full__data = mutable_data
 
             response = super().post(request, *args, **kwargs)
-            
+
             tokens = response.data
             new_access_token = tokens.get("access")
 
