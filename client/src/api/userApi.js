@@ -92,3 +92,15 @@ export const toggleFollow = async (username) => {
         );
     }
 }
+
+export const get_user_posts = async (username) => {
+    try{
+        const response = await apiClient.get(`posts/${username}`)
+        return response.data
+    }catch(error){
+        throw(
+            error.response?.data?.error ||
+            `An error occurred while attempting to toggle follow ${username}`
+        );
+    }
+}

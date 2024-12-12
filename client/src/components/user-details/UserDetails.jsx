@@ -78,14 +78,14 @@ const UserDetails = ({ username }) => {
             <div className="flex flex-col justify-start gap-3 pt-5">
                 {showEditProfile ? (
                     <div className="flex justify-start mb-3 ">
-                        <button className="px-4 py-2 bg-primary text-white rounded-lg shadow hover:shadow-2xl hover:bg-secondary">
+                        <button className="px-4 py-2 bg-primary text-white rounded-lg shadow-sm shadow-secondary hover:shadow-white hover:bg-secondary">
                             Edit Profile
                         </button>
                     </div>
                 ) : (
                     <div className="flex justify-start mb-3 relative group w-24">
                         <button
-                            className="px-4 py-2 bg-primary text-white rounded-lg shadow hover:shadow-2xl hover:bg-secondary w-28"
+                            className="px-4 py-2 bg-primary text-white rounded-lg shadow-sm shadow-secondary hover:shadow-white hover:bg-secondary w-28"
                             onClick={handleToggleFollow}
                         >
                             {isFollowing ? "Following" : "Follow"}
