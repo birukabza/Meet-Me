@@ -93,10 +93,10 @@ export const toggleFollow = async (username) => {
     }
 }
 
-export const get_user_posts = async (username) => {
+export const getUserPosts= async (username) => {
     try{
         const response = await apiClient.get(`posts/${username}`)
-        return response.data
+        return response.data.data
     }catch(error){
         throw(
             error.response?.data?.error ||
