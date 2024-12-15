@@ -4,13 +4,13 @@ const Post = ({ post }) => {
   return (
     <div
       key={post.id}
-      className="p-4 bg-gray-800  transition-shadow flex flex-col justify-between h-full"
+      className="p-4 bg-gray-800  transition-shadow flex flex-col justify-between h-80"
     >
       {post.image ? (
         <img
           src={post.image}
           alt={post.title}
-          className="w-full h-48 object-cover mb-4"
+          className="w-full  object-cover mb-4"
         />
       ) : (
         null
