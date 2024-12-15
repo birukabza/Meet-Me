@@ -61,11 +61,11 @@ const Posts = ({ username }) => {
 
   return (
     <div className="mt-6 w-full flex justify-center">
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 max-w-6xl w-full px-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 max-w-full w-full px-4">
         {dummyPosts.length > 0 ? (
           dummyPosts.map((post) => <Post key={post.id} post={post} />) 
         ) : (
-          <p className="text-gray-500 text-center col-span-full">
+          <p className="text-white text-center col-span-full">
             No posts available for {username}.
           </p>
         )}
