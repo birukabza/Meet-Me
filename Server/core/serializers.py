@@ -5,6 +5,7 @@ from .models import UserProfile, Post
 class UserProfileSerializer(serializers.ModelSerializer):
     followers_count = serializers.SerializerMethodField()
     following_count = serializers.SerializerMethodField()
+    post_count = serializers.SerializerMethodField()  # Add this line
 
     class Meta:
         model = UserProfile
@@ -15,6 +16,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
             "avatar",
             "followers_count",
             "following_count",
+            "post_count",  
         ]
 
     def get_followers_count(self, obj):
@@ -23,12 +25,16 @@ class UserProfileSerializer(serializers.ModelSerializer):
     def get_following_count(self, obj):
         return obj.following.count()
 
+    def get_post_count(self, obj):
+        return obj.posts.count()  
+
     def validate_bio(self, value):
         if value:
             if len(value) > 600:
                 raise serializers.ValidationError(
                     "Bio can not be greater than 600 characters"
                 )
+        return value
 
 
 class RegistrationSerializer(serializers.ModelSerializer):

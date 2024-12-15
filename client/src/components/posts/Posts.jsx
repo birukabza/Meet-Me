@@ -1,6 +1,9 @@
 import PropTypes from "prop-types";
+
 import Post from "../post/Post";
+
 import { getUserPosts } from "../../api/userApi";
+
 import { useEffect, useState } from "react";
 
 const Posts = ({ username }) => {
@@ -11,11 +14,11 @@ const Posts = ({ username }) => {
   useEffect(() => {
     const fetchPosts = async () => {
       setLoadingPosts(true);
-      setError(null); // Reset error state
+      setError(null); 
       try {
         const fetchedPosts = await getUserPosts(username);
         console.log(fetchedPosts)
-        setPosts(fetchedPosts || []); // Default to an empty array if no posts
+        setPosts(fetchedPosts || []); 
       } catch (error) {
         console.error("Error fetching posts:", error);
         setError("Failed to load posts. Please try again later.");
