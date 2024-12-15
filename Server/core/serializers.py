@@ -65,8 +65,10 @@ class RegistrationSerializer(serializers.ModelSerializer):
 class PostSerializer(serializers.ModelSerializer):
     likes_count = serializers.SerializerMethodField()
     username = serializers.SerializerMethodField() 
+    is_liked = serializers.SerializerMethodField()
     created_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S")
     updated_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S")
+    image = serializers.SerializerMethodField()
 
     class Meta:
         model = Post
@@ -79,6 +81,7 @@ class PostSerializer(serializers.ModelSerializer):
             "updated_at",
             "likes",
             "likes_count",
+            "is_liked",
         ]
 
     def get_likes_count(self, obj):
@@ -86,6 +89,16 @@ class PostSerializer(serializers.ModelSerializer):
 
     def get_username(self, obj):
         return obj.user.username
+    
+    def get_is_liked(self, obj):
+        request = self.context.get("request")
+        if request:
+            return request.user in obj.likes.all()
+    def get_image(self, obj):
+        if obj.image:
+            return obj.image.url  
+        return None
+
 
     def validate(self, data):
         if not (data.get("content") or data.get("image")):

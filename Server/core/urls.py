@@ -26,7 +26,8 @@ urlpatterns = [
         name="toggle_follow",
     ),
     path("posts/<str:username>", GetUserPostApiView.as_view(), name="user_posts"),
-    path("like_post/", TogglePostLike.as_view(), name="like_post"),
+    path("toggle_like_post/<int:post_id>/", TogglePostLike.as_view(), 
+          name="toggle_like_post"),
 ]
 
 if settings.DEBUG:

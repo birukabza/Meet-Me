@@ -104,8 +104,9 @@ class GetUserPostApiView(APIView):
                 }
             )
         try:
+
             posts = user.posts.all()
-            serializer = PostSerializer(posts, many=True)
+            serializer = PostSerializer(posts, many=True, context={'request': request})
             return Response(
                 {"success": True, "data": serializer.data},
                 status=status.HTTP_200_OK,
@@ -127,7 +128,6 @@ class TogglePostLike(APIView):
 
     def post(self, request, post_id):
         try:
-
             post_to_like = Post.objects.get(post_id=post_id)
             request_user = request.user
             liked: bool = False
@@ -135,7 +135,7 @@ class TogglePostLike(APIView):
                 liked = False
                 post_to_like.likes.remove(request_user)
             else:
-                liked =True
+                liked = True
                 post_to_like.likes.add(request_user)
 
             return Response(
@@ -157,7 +157,7 @@ class TogglePostLike(APIView):
                 {
                     "success": False,
                     "error": "internal_server_error",
-                    "detail": "An unexpected error occurred.",
+                    "detail": "An unexpected error occurred while toggling like.",
                 },
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )

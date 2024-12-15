@@ -93,6 +93,18 @@ export const toggleFollow = async (username) => {
     }
 }
 
+export const toggleLike = async (post_id) => {
+    try{
+        const response = await apiClient.post(`toggle_like_post/${post_id}/`);
+        return response.data;
+    }catch(error){
+        throw (
+            error.response?.data?.error ||
+            `An error occurred while attempting to toggle like ${post_id}`
+        );
+    }
+}
+
 export const getUserPosts= async (username) => {
     try{
         const response = await apiClient.get(`posts/${username}`)
@@ -104,3 +116,6 @@ export const getUserPosts= async (username) => {
         );
     }
 }
+
+
+
