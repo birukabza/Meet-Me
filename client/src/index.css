@@ -2,6 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
+
+html, body {
+    @apply h-full bg-primaryLight2 text-white; 
+    margin: 0; 
+    padding: 0;
+    overflow-x: hidden; 
+  }
+
 @layer components{
     .side-bar-icons{
         @apply relative flex items-center justify-center size-16 my-2 mx-auto shadow-xl text-secondary bg-primaryLight2 hover:bg-secondary hover:text-white rounded-3xl hover:rounded-xl transition-all duration-300 ease-linear cursor-pointer;

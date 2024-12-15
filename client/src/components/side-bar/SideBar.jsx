@@ -17,7 +17,7 @@ const SideBar = () => {
   const redirectTo = isAuthenticated ?  `profile/${username}`  : "/signin"
 
   return (
-    <div className="flex flex-col fixed top-0 left-0 h-screen w-24 text-white bg-primary shadow-xl p-4">
+    <div className="flex flex-col fixed top-0 left-0 h-screen w-24 text-white bg-primary shadow-xl p-4 z-10">
       <Link to="/">
         <SideBarIcons icon={logo} logo />
       </Link>

@@ -11,7 +11,7 @@ const UserProfile = () => {
     const { username } = useParams()
 
     return (
-        <div className="flex flex-col pl-40 py-12 mr-80 ">
+        <div className="flex flex-col pl-80 py-16 mr-80 ">
 
             {/* user details */}
             <div className="flex flex-row gap-12 max-w-5xl w-full">
@@ -26,9 +26,7 @@ const UserProfile = () => {
                 <MdOutlineFeaturedPlayList className="text-white mt-2"/>
                 <h2 className="text-xl tracking-wider font-thin justify-self-center text-white mb-6">POSTS</h2>
             </div>
-
                 <Posts username={username} />
-
         </div>
     );
 };

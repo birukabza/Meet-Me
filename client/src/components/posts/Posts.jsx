@@ -1,69 +1,53 @@
 import PropTypes from "prop-types";
 import Post from "../post/Post";
+import { getUserPosts } from "../../api/userApi";
+import { useEffect, useState } from "react";
 
 const Posts = ({ username }) => {
-  const dummyPosts = [
-    {
-      id: 1,
-      title: "Exploring React Best Practices",
-      content: "Learn how to write clean and maintainable React code.",
-      image: "https://i.ibb.co/RNw5pbk/sneakers.jpg",
-    },
-    {
-      id: 2,
-      title: "Understanding State Management",
-      content: "A deep dive into Redux and React Context.",
-    },
-    {
-      id: 3,
-      title: "Styling in React",
-      content: "CSS-in-JS vs traditional CSS. What works best?",
-      image: "https://i.ibb.co/StjrxXv/jacket.jpg",
-    },
-    {
-      id: 4,
-      title: "Performance Optimization",
-      content: "Tips to make your React app faster.",
-    },
-    {
-      id: 5,
-      title: "React Hooks",
-      content: "How to effectively use useState and useEffect.",
-      image: "https://i.ibb.co/StjrxXv/jacket.jpg",
-    },
-    {
-      id: 6,
-      title: "Component Composition",
-      content: "Understanding props and children in React.",
-    },
-    {
-      id: 7,
-      title: "Performance Optimization",
-      content: "Tips to make your React app faster.",
-    },
-    {
-      id: 8,
-      title: "React Hooks",
-      content: "How to effectively use useState and useEffect.",
-      image: "https://i.ibb.co/StjrxXv/jacket.jpg",
-    },
-    {
-      id: 9,
-      title: "Component Composition",
-      content: "Understanding props and children in React.",
-    },
-    {
-      id: 10,
-      title: "Performance Optimization",
-      content: "Tips to make your React app faster.",
-    },
-  ];
+  const [posts, setPosts] = useState([]);
+  const [loadingPosts, setLoadingPosts] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchPosts = async () => {
+      setLoadingPosts(true);
+      setError(null); // Reset error state
+      try {
+        const fetchedPosts = await getUserPosts(username);
+        console.log(fetchedPosts)
+        setPosts(fetchedPosts || []); // Default to an empty array if no posts
+      } catch (error) {
+        console.error("Error fetching posts:", error);
+        setError("Failed to load posts. Please try again later.");
+      } finally {
+        setLoadingPosts(false);
+      }
+    };
+
+    fetchPosts();
+  }, [username]);
+
+  if (loadingPosts) {
+    return (
+      <div className="mt-6 w-full flex justify-center">
+        <p className="text-white text-center">Loading posts...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="mt-6 w-full flex justify-center">
+        <p className="text-red-500 text-center">{error}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="mt-6 w-full flex justify-center">
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 max-w-full w-full px-4">
-        {dummyPosts.length > 0 ? (
-          dummyPosts.map((post) => <Post key={post.id} post={post} />) 
+        {posts.length > 0 ? (
+          posts.map((post) => <Post key={post.post_id} post={post} />)
         ) : (
           <p className="text-white text-center col-span-full">
             No posts available for {username}.
@@ -77,5 +61,6 @@ const Posts = ({ username }) => {
 Posts.propTypes = {
   username: PropTypes.string.isRequired,
 };
+
 
 export default Posts;
