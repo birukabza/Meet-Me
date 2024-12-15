@@ -17,4 +17,6 @@ html, body {
     .side-bar-side-text{
         @apply absolute w-auto p-2 m-3 min-w-max left-20 rounded-lg shadow-lg text-white bg-black font-bold transition-all duration-100 scale-0 origin-left;
     }
+
+  
 }

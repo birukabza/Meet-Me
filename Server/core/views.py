@@ -37,6 +37,9 @@ class UserProfileApiView(APIView):
                 )
 
             except Exception as e:
+                logger.error(
+                    f"An error occurred while serializing the user data: {str(e)}"
+                )
                 return Response(
                     {
                         "success": False,
@@ -108,11 +111,53 @@ class GetUserPostApiView(APIView):
                 status=status.HTTP_200_OK,
             )
         except Exception as e:
+            logger.error(f"An error occurred while serializing the user data: {str(e)}")
             return Response(
                 {
                     "success": False,
                     "error": "serialization_error",
                     "detail": f"An error occurred while serializing the user data: {str(e)}",
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+
+class TogglePostLike(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, post_id):
+        try:
+
+            post_to_like = Post.objects.get(post_id=post_id)
+            request_user = request.user
+            liked: bool = False
+            if request.user in post_to_like.likes.all():
+                liked = False
+                post_to_like.likes.remove(request_user)
+            else:
+                liked =True
+                post_to_like.likes.add(request_user)
+
+            return Response(
+                {"success": True, "liked": liked},
+                status=status.HTTP_200_OK,
+            )
+
+        except Post.DoesNotExist:
+            return NotFound(
+                {
+                    "success": False,
+                    "error": "post_not_found",
+                    "detail": f"post does not exist.",
+                }
+            )
+        except Exception as e:
+            logger.error(f"Unexpected error: {e}")
+            return Response(
+                {
+                    "success": False,
+                    "error": "internal_server_error",
+                    "detail": "An unexpected error occurred.",
                 },
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
@@ -237,25 +282,25 @@ class CustomTokenObtainPairView(TokenObtainPairView):
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
 
+
 class CustomTokenRefreshView(TokenRefreshView):
     def post(self, request, *args, **kwargs):
-            
+
         try:
-            refresh_token = request.COOKIES.get('refresh_token')
+            refresh_token = request.COOKIES.get("refresh_token")
             if not refresh_token:
                 return Response(
                     {"success": False, "error": "Refresh token not provided"},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
-            
-            request.data['refresh'] = refresh_token
+
+            request.data["refresh"] = refresh_token
 
             response = super().post(request, *args, **kwargs)
             tokens = response.data
 
             new_access_token = tokens.get("access")
 
-            
             res = Response(
                 {
                     "success": True,
@@ -265,12 +310,12 @@ class CustomTokenRefreshView(TokenRefreshView):
             )
 
             res.set_cookie(
-                key='access_token',
+                key="access_token",
                 value=new_access_token,
                 httponly=True,
                 secure=True,
-                samesite='None',
-                path='/'
+                samesite="None",
+                path="/",
             )
 
             return res

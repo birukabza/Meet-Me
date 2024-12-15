@@ -10,6 +10,7 @@ from .views import (
     AuthStatusView,
     ToggleFollowView,
     GetUserPostApiView,
+    TogglePostLike,
 )
 
 
@@ -25,6 +26,7 @@ urlpatterns = [
         name="toggle_follow",
     ),
     path("posts/<str:username>", GetUserPostApiView.as_view(), name="user_posts"),
+    path("like_post/", TogglePostLike.as_view(), name="like_post"),
 ]
 
 if settings.DEBUG:

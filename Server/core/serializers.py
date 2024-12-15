@@ -5,7 +5,8 @@ from .models import UserProfile, Post
 class UserProfileSerializer(serializers.ModelSerializer):
     followers_count = serializers.SerializerMethodField()
     following_count = serializers.SerializerMethodField()
-    post_count = serializers.SerializerMethodField()  # Add this line
+    post_count = serializers.SerializerMethodField()
+    liked_count = serializers.SerializerMethodField()
 
     class Meta:
         model = UserProfile
@@ -16,7 +17,8 @@ class UserProfileSerializer(serializers.ModelSerializer):
             "avatar",
             "followers_count",
             "following_count",
-            "post_count",  
+            "post_count",
+            "liked_count",  
         ]
 
     def get_followers_count(self, obj):
@@ -27,6 +29,9 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     def get_post_count(self, obj):
         return obj.posts.count()  
+    
+    def get_liked_count(self, obj):
+        return obj.liked_posts.count()
 
     def validate_bio(self, value):
         if value:
@@ -59,7 +64,6 @@ class RegistrationSerializer(serializers.ModelSerializer):
 
 class PostSerializer(serializers.ModelSerializer):
     likes_count = serializers.SerializerMethodField()
-    liked_count = serializers.SerializerMethodField()
     username = serializers.SerializerMethodField() 
     created_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S")
     updated_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S")
@@ -75,14 +79,10 @@ class PostSerializer(serializers.ModelSerializer):
             "updated_at",
             "likes",
             "likes_count",
-            "liked_count",
         ]
 
     def get_likes_count(self, obj):
         return obj.likes.count()
-
-    def get_liked_count(self, obj):
-        return obj.user.liked_posts.count()
 
     def get_username(self, obj):
         return obj.user.username
