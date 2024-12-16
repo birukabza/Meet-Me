@@ -66,8 +66,8 @@ class PostSerializer(serializers.ModelSerializer):
     likes_count = serializers.SerializerMethodField()
     username = serializers.SerializerMethodField() 
     is_liked = serializers.SerializerMethodField()
-    created_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S")
-    updated_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S")
+    created_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
+    updated_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
     image = serializers.SerializerMethodField()
 
     class Meta:
@@ -83,6 +83,7 @@ class PostSerializer(serializers.ModelSerializer):
             "likes_count",
             "is_liked",
         ]
+        read_only_fields = ["likes", "likes_count", "is_liked"]
 
     def get_likes_count(self, obj):
         return obj.likes.count()

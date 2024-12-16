@@ -174,9 +174,6 @@ class TogglePostLike(APIView):
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
 class CreatePostAPIView(APIView):
-    """
-    API view to create a new post.
-    """
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
