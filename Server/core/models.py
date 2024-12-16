@@ -35,12 +35,8 @@ class Post(models.Model):
     content = models.TextField(max_length=1000, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    image = models.ImageField(upload_to="post_images/", blank=True, null=True)
+    image = models.ImageField(upload_to="post_images/", default="post_images/default.png",blank=False, null=False)
     likes = models.ManyToManyField(UserProfile, related_name="liked_posts", blank=True)
-
-    def clean(self):
-        if not (self.content or self.image):
-            raise ValidationError("A post must have either an image or a content")
 
     # over riding the built in save method
     def save(self, *args, **kwargs):

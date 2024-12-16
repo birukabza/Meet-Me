@@ -101,9 +101,5 @@ class PostSerializer(serializers.ModelSerializer):
         return None
 
 
-    def validate(self, data):
-        if not (data.get("content") or data.get("image")):
-            raise serializers.ValidationError("A post must have either an image or content.")
-        return data
 
     
