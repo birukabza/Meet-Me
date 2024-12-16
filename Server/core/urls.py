@@ -11,6 +11,7 @@ from .views import (
     ToggleFollowView,
     GetUserPostApiView,
     TogglePostLike,
+    CreatePostAPIView,
 )
 
 
@@ -26,8 +27,12 @@ urlpatterns = [
         name="toggle_follow",
     ),
     path("posts/<str:username>", GetUserPostApiView.as_view(), name="user_posts"),
-    path("toggle_like_post/<int:post_id>/", TogglePostLike.as_view(), 
-          name="toggle_like_post"),
+    path(
+        "toggle_like_post/<int:post_id>/",
+        TogglePostLike.as_view(),
+        name="toggle_like_post",
+    ),
+    path("create_post/", CreatePostAPIView.as_view(), name="create_post"),
 ]
 
 if settings.DEBUG:

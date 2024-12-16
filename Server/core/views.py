@@ -70,22 +70,34 @@ class UserProfileApiView(APIView):
 
 class RegistrationApiView(APIView):
     def post(self, request, *args, **kwargs):
-        serializer = RegistrationSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(
-                {"success": True, "data": serializer.data},
-                status=status.HTTP_201_CREATED,
-            )
 
-        return Response(
-            {
-                "success": False,
-                "error": "registration_error",
-                "detail": serializer.errors,
-            },
-            status=status.HTTP_400_BAD_REQUEST,
-        )
+        try:
+            serializer = RegistrationSerializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(
+                    {"success": True, "data": serializer.data},
+                    status=status.HTTP_201_CREATED,
+                )
+
+            return Response(
+                {
+                    "success": False,
+                    "error": "registration_error",
+                    "detail": serializer.errors,
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        except Exception as e:
+            logger.error("Unexpected error in RegistrationAPIView: ", e)
+            return Response(
+                {
+                    "success": False,
+                    "error": "registration_error",
+                    "detail": "Unexpected error while serializing in Registration",
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
 
 
 class GetUserPostApiView(APIView):
@@ -161,6 +173,47 @@ class TogglePostLike(APIView):
                 },
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
+class CreatePostAPIView(APIView):
+    """
+    API view to create a new post.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        try:
+            user = request.user
+            
+            serializer = PostSerializer(data=request.data, context={"request": request})
+            if serializer.is_valid():
+                serializer.save(user=user)
+                return Response(
+                    {
+                        "success": True,
+                        "data": serializer.data,
+                    },
+                    status=status.HTTP_201_CREATED,
+                )
+            return Response(
+                {
+                    "success": False,
+                    "error": "validation_error",
+                    "detail": serializer.errors,
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        except Exception as e:
+            logger.error(f"Unexpected error in CreatePostAPIView: {str(e)}")
+            return Response(
+                {
+                    "success": False,
+                    "error": "internal_server_error",
+                    "detail": "An unexpected error occurred while creating the post.",
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+
+
 
 
 class AuthStatusView(APIView):
