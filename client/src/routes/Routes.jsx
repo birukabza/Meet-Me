@@ -4,6 +4,7 @@ import Layout from "../components/layout/Layout";
 import UserProfile from "../pages/user-profile/UserProfile";
 import SignIn from "../pages/sign-in-page/SignIn";
 import SignUp from "../pages/sign-up-page/SignUp";
+import HomePage from "../pages/home-page/HomePage";
 
 import PrivateRoute from "../components/private-route/PrivateRoute";
 
@@ -21,6 +22,10 @@ const router = createBrowserRouter([
     path: "/",
     element: <RouterLayout />,
     children: [
+      {
+        path:"home",
+        element:<HomePage/>,
+      },
       {
         path: "profile/:username",
         element: (

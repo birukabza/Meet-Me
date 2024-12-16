@@ -1,6 +1,7 @@
 import PropTypes from "prop-types";
 
 import Post from "../post/Post";
+import PlusSign from "../custom-buttons/PlusSign"
 
 import { getUserPosts } from "../../api/userApi";
 
@@ -14,11 +15,10 @@ const Posts = ({ username }) => {
   useEffect(() => {
     const fetchPosts = async () => {
       setLoadingPosts(true);
-      setError(null); 
+      setError(null);
       try {
         const fetchedPosts = await getUserPosts(username);
-        console.log(fetchedPosts)
-        setPosts(fetchedPosts || []); 
+        setPosts(fetchedPosts || []);
       } catch (error) {
         console.error("Error fetching posts:", error);
         setError("Failed to load posts. Please try again later.");
@@ -52,12 +52,16 @@ const Posts = ({ username }) => {
         {posts.length > 0 ? (
           posts.map((post) => <Post key={post.post_id} post={post} />)
         ) : (
-          <p className="text-white text-center col-span-full">
-            No posts available for {username}.
-          </p>
+          <div className="flex flex-col gap-5 justify-center items-center col-span-full h-full">
+              <p className="text-white">
+                Share Your first art
+              </p>
+              <PlusSign />
+          </div>
         )}
       </div>
     </div>
+
   );
 };
 
