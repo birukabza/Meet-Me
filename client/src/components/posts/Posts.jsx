@@ -1,7 +1,8 @@
 import PropTypes from "prop-types";
 
 import Post from "../post/Post";
-import PlusSign from "../custom-buttons/PlusSign"
+import PlusSign from "../custom-buttons/PlusSign";
+import CreatePostModal from "../modals/CreatePostModal";
 
 import { getUserPosts } from "../../api/userApi";
 
@@ -11,6 +12,7 @@ const Posts = ({ username }) => {
   const [posts, setPosts] = useState([]);
   const [loadingPosts, setLoadingPosts] = useState(true);
   const [error, setError] = useState(null);
+  const [showCreatePostModal, setShowCreatePostModal] = useState(false);
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -53,21 +55,22 @@ const Posts = ({ username }) => {
           posts.map((post) => <Post key={post.post_id} post={post} />)
         ) : (
           <div className="flex flex-col gap-5 justify-center items-center col-span-full h-full">
-              <p className="text-white">
-                Share Your first art
-              </p>
+            <p className="text-white">Share Your first art</p>
+            <div className="" onClick={() => setShowCreatePostModal(true)}>
               <PlusSign />
+            </div>
           </div>
         )}
       </div>
+      {showCreatePostModal && (
+        <CreatePostModal onClose={() => setShowCreatePostModal(false)} />
+      )}
     </div>
-
   );
 };
 
 Posts.propTypes = {
   username: PropTypes.string.isRequired,
 };
-
 
 export default Posts;
