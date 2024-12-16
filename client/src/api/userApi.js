@@ -117,5 +117,17 @@ export const getUserPosts= async (username) => {
     }
 }
 
+export const createPost =  async (postData) => {
+    try{
+        const response = await apiClient.post('create_post/', {postData})
+        return response.data
+    }catch(error){
+        throw(
+            error.response?.data?.error ||
+            `An error occurred while attempting to post`
+        );
+    }
+}
+
 
 
