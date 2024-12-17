@@ -8,6 +8,7 @@ from rest_framework_simplejwt.exceptions import (
     InvalidToken,
     TokenError,
 )
+from rest_framework.parsers import MultiPartParser, FormParser
 from .models import UserProfile, Post
 from .serializers import UserProfileSerializer, RegistrationSerializer, PostSerializer
 import logging
@@ -118,11 +119,18 @@ class GetUserPostApiView(APIView):
         try:
 
             posts = user.posts.all()
-            serializer = PostSerializer(posts, many=True, context={'request': request})
+            serializer = PostSerializer(posts, many=True)
+            serialized_data = serializer.data
+            
+            for post in serialized_data:
+                post_obj = posts.get(post_id=post["post_id"])
+                post["is_liked"] = request.user in post_obj.likes.all()
+
             return Response(
-                {"success": True, "data": serializer.data},
+                {"success": True, "data": serialized_data},
                 status=status.HTTP_200_OK,
             )
+            
         except Exception as e:
             logger.error(f"An error occurred while serializing the user data: {str(e)}")
             return Response(
@@ -173,14 +181,20 @@ class TogglePostLike(APIView):
                 },
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
+
+
 class CreatePostAPIView(APIView):
     permission_classes = [IsAuthenticated]
+    parser_classes = (MultiPartParser, FormParser)
 
     def post(self, request):
         try:
             user = request.user
-            
-            serializer = PostSerializer(data=request.data, context={"request": request})
+            print(request.data)
+            serializer = PostSerializer(
+                data=request.data,
+            )
+
             if serializer.is_valid():
                 serializer.save(user=user)
                 return Response(
@@ -208,9 +222,6 @@ class CreatePostAPIView(APIView):
                 },
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
-
-
-
 
 
 class AuthStatusView(APIView):

@@ -40,6 +40,7 @@ class Post(models.Model):
 
     # over riding the built in save method
     def save(self, *args, **kwargs):
+        print("image being saved: " , self.image)
         self.full_clean()
         super().save(*args, **kwargs)
 
