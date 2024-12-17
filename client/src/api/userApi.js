@@ -8,22 +8,22 @@ const apiClient = axios.create({
 });
 
 apiClient.interceptors.response.use(
-    response => response,
+    (response) => response,
     async (error) => {
         const originalRequest = error.config;
 
-        if (error.response?.status === 401 && !originalRequest._retry){
+        if (error.response?.status === 401 && !originalRequest._retry) {
             originalRequest._retry = true;
 
             try {
-                 await apiClient.post("/token/refresh/")
-                 return apiClient(originalRequest)
-            }catch(refreshError){
-                 return Promise.reject(refreshError)
+                await apiClient.post("/token/refresh/");
+                return apiClient(originalRequest);
+            } catch (refreshError) {
+                return Promise.reject(refreshError);
             }
         }
 
-         return Promise.reject(error);
+        return Promise.reject(error);
     }
 );
 
@@ -39,33 +39,35 @@ export const fetchUserProfile = async (username) => {
     }
 };
 
-
 export const signInApi = async (username, password) => {
-    try { 
+    try {
         const response = await apiClient.post("token/", {
             username,
             password,
         });
-        return response.data; 
+        return response.data;
     } catch (error) {
         if (error.response && error.response.status === 401) {
             return { success: false, message: "Invalid username or password" };
         }
         console.log(error, "Error while logging in");
-        throw error; 
+        throw error;
     }
 };
 
 export const signUpApi = async (userData) => {
-    try { 
+    try {
         const response = await apiClient.post("register/", userData);
-    if (response.status === 201) {
-        return response.data; 
-      }
-      throw new Error('Signup failed');
+        if (response.status === 201) {
+            return response.data;
+        }
+        throw new Error("Signup failed");
     } catch (error) {
-      console.error('Signup Error:', error.response ? error.response.data : error.message);
-      throw error; 
+        console.error(
+            "Signup Error:",
+            error.response ? error.response.data : error.message
+        );
+        throw error;
     }
 };
 
@@ -75,59 +77,62 @@ export const getAuth = async () => {
         return response.data;
     } catch (error) {
         throw (
-            error.response?.data?.error ||
-            "An error occurred while authenticating"
+            error.response?.data?.error || "An error occurred while authenticating"
         );
     }
-}
+};
 
 export const toggleFollow = async (username) => {
-    try{
+    try {
         const response = await apiClient.post(`toggle_follow/${username}/`);
         return response.data;
-    }catch(error){
+    } catch (error) {
         throw (
             error.response?.data?.error ||
             `An error occurred while attempting to toggle follow ${username}`
         );
     }
-}
+};
 
 export const toggleLike = async (post_id) => {
-    try{
+    try {
         const response = await apiClient.post(`toggle_like_post/${post_id}/`);
         return response.data;
-    }catch(error){
+    } catch (error) {
         throw (
             error.response?.data?.error ||
             `An error occurred while attempting to toggle like ${post_id}`
         );
     }
-}
+};
 
-export const getUserPosts= async (username) => {
-    try{
-        const response = await apiClient.get(`posts/${username}`)
-        return response.data.data
-    }catch(error){
-        throw(
+export const getUserPosts = async (username) => {
+    try {
+        const response = await apiClient.get(`posts/${username}`);
+        return response.data.data;
+    } catch (error) {
+        throw (
             error.response?.data?.error ||
             `An error occurred while attempting to toggle follow ${username}`
         );
     }
-}
+};
 
-export const createPost =  async (postData) => {
-    try{
-        const response = await apiClient.post('create_post/', {postData})
-        return response.data
-    }catch(error){
-        throw(
+export const createPost = async (postData) => {
+    const formData = new FormData();
+    formData.append("image", postData.image);
+    formData.append("content", postData.content);
+    try {
+        const response = await apiClient.post("create_post/", formData, {
+            headers: {
+                "Content-Type": "multipart/form-data", 
+            },
+        });
+        return response.data;
+    } catch (error) {
+        throw (
             error.response?.data?.error ||
             `An error occurred while attempting to post`
         );
     }
-}
-
-
-
+};

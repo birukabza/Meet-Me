@@ -24,7 +24,7 @@ const UserProfile = () => {
             {/* {Header for post section} */}
             <div className="mt-1 flex flex-row justify-center gap-2">
                 <MdOutlineFeaturedPlayList className="text-white mt-2"/>
-                <h2 className="text-xl tracking-wider font-thin justify-self-center text-white mb-6">POSTS</h2>
+                <h2 className="text-xl tracking-wider font-thin justify-self-center text-white mb-6">My Arts</h2>
             </div>
                 <Posts username={username} />
         </div>

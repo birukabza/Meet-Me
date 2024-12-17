@@ -8,7 +8,7 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [isAuthLoading, setIsAuthLoading] = useState(true);
-    const [username, setUsername] = useState(null);  
+    const [currentUsername, setCurrentUsername] = useState(null);  
 
     const location = useLocation();
 
@@ -18,10 +18,10 @@ export const AuthProvider = ({ children }) => {
             try {
                 const response = await getAuth();
                 setIsAuthenticated(true);
-                setUsername(response.username)
+                setCurrentUsername(response.username)
             } catch {
                 setIsAuthenticated(false);
-                setUsername(null);
+                setCurrentUsername(null);
             } finally {
                 setIsAuthLoading(false);
             }
@@ -47,7 +47,7 @@ export const AuthProvider = ({ children }) => {
     
 
     return (
-        <AuthContext.Provider value={{ isAuthenticated, isAuthLoading, authSignIn, username }}>
+        <AuthContext.Provider value={{ isAuthenticated, isAuthLoading, authSignIn, currentUsername }}>
             {children}
         </AuthContext.Provider>
     );

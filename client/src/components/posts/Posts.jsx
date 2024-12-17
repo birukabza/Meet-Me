@@ -6,13 +6,17 @@ import CreatePostModal from "../modals/CreatePostModal";
 
 import { getUserPosts } from "../../api/userApi";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
+
+import AuthContext from "../../contexts/AuthContext";
 
 const Posts = ({ username }) => {
   const [posts, setPosts] = useState([]);
   const [loadingPosts, setLoadingPosts] = useState(true);
   const [error, setError] = useState(null);
   const [showCreatePostModal, setShowCreatePostModal] = useState(false);
+
+  const { currentUsername } = useContext(AuthContext);
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -51,14 +55,33 @@ const Posts = ({ username }) => {
   return (
     <div className="mt-6 w-full flex justify-center">
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 max-w-full w-full px-4">
+        {username === currentUsername && (
+          <div
+            className="flex flex-col justify-center items-center"
+            onClick={() => setShowCreatePostModal(true)}
+          >
+            <PlusSign />{" "}
+            Add your work
+          </div>
+        )}
         {posts.length > 0 ? (
           posts.map((post) => <Post key={post.post_id} post={post} />)
         ) : (
           <div className="flex flex-col gap-5 justify-center items-center col-span-full h-full">
-            <p className="text-white">Share Your first art</p>
-            <div className="" onClick={() => setShowCreatePostModal(true)}>
-              <PlusSign />
-            </div>
+            {
+
+              currentUsername === username ? (
+                <>
+                  <p className="text-white">Share Your first art</p>
+                  <div className="" onClick={() => setShowCreatePostModal(true)}>
+                    <PlusSign />
+                  </div>
+                </>
+              ) : (
+                <p className="">No Posts Available</p>
+              )
+
+            }
           </div>
         )}
       </div>
