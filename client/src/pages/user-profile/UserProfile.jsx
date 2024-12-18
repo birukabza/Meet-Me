@@ -11,7 +11,7 @@ const UserProfile = () => {
     const { username } = useParams()
 
     return (
-        <div className="flex flex-col pl-80 py-16 mr-80 ">
+        <div className="flex flex-col pl-64 py-16 mr-80 ">
 
             {/* user details */}
             <div className="flex flex-row gap-12 max-w-5xl w-full">

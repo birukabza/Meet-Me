@@ -6,7 +6,7 @@ const Layout = () => {
     <div className="flex flex-row bg-primaryLight2 w-screen min-h-screen gap-1">
       <SideBar />
       <div className="bg-gray-700 w-[calc(6rem+1px)] min-h-screen fixed"></div> 
-      <div className="flex-grow">
+      <div className="flex-grow pl-[calc(6rem+1px)]">
         <Outlet />
         </div> 
     </div>

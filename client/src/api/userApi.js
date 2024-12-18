@@ -136,3 +136,15 @@ export const createPost = async (postData) => {
         );
     }
 };
+
+export const fetchFeed = async () => {
+    try{
+
+        const response  = await apiClient.get("feed/")
+        return response.data
+    }catch{
+        throw(
+            "An error occurred while fetching feed"
+        )
+    }
+}
