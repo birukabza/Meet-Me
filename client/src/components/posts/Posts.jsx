@@ -36,6 +36,10 @@ const Posts = ({ username }) => {
     fetchPosts();
   }, [username]);
 
+  const handleNewPost = (newPost) => {
+    setPosts(prevPosts => [newPost, ...prevPosts])
+  }
+
   if (loadingPosts) {
     return (
       <div className="mt-6 w-full flex justify-center">
@@ -86,7 +90,7 @@ const Posts = ({ username }) => {
         )}
       </div>
       {showCreatePostModal && (
-        <CreatePostModal onClose={() => setShowCreatePostModal(false)} />
+        <CreatePostModal onClose={() => setShowCreatePostModal(false)} onCreateNewPost={handleNewPost}/>
       )}
     </div>
   );

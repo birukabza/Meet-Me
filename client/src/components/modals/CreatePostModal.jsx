@@ -8,7 +8,7 @@ import { createPost } from '../../api/userApi';
 
 import CustomButton from '../custom-buttons/CustomButton';
 
-const CreatePostModal = ({ onClose }) => {
+const CreatePostModal = ({ onClose, onCreateNewPost }) => {
     const [imageUrl, setImageUrl] = useState(null);
     const [imageBlob, setImageBlob] = useState(null);
     const [caption, setCaption] = useState('');
@@ -64,6 +64,7 @@ const CreatePostModal = ({ onClose }) => {
             const response = await createPost({ image: imageBlob, content: caption });
             if (response.success) {
                 alert("Post successfully created!");
+                onCreateNewPost(response.data)
                 setCaption('');
                 setImageUrl(null);
                 onClose();
@@ -142,6 +143,7 @@ const CreatePostModal = ({ onClose }) => {
 
 CreatePostModal.propTypes = {
     onClose: PropTypes.func.isRequired,
+    onCreateNewPost: PropTypes.func.isRequired,
 };
 
 export default CreatePostModal;
