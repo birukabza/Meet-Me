@@ -8,6 +8,7 @@ from rest_framework_simplejwt.exceptions import (
     InvalidToken,
     TokenError,
 )
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.parsers import MultiPartParser, FormParser
 from .models import UserProfile, Post
 from .serializers import UserProfileSerializer, RegistrationSerializer, PostSerializer
@@ -284,6 +285,34 @@ class ToggleFollowView(APIView):
                 },
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
+
+class FeedPagination(PageNumberPagination):
+    page_size = 35
+    page_size_query_param = 'page_size'
+    max_page_size = 80
+
+
+class FeedView(APIView):
+    def get(self, request):
+        posts = Post.objects.prefetch_related('likes').all()
+
+        paginator = FeedPagination()
+        paginated_posts = paginator.paginate_queryset(posts, request)
+
+        serializer = PostSerializer(paginated_posts, many=True)
+        serialized_data = serializer.data
+
+        user = request.user if request.user.is_authenticated else None
+
+        for post, serialized_post in zip(paginated_posts, serialized_data):
+            serialized_post["is_liked"] = user in post.likes.all() if user else False
+
+        return paginator.get_paginated_response(serialized_data)
+
+
+
+
+    
 
 
 class CustomTokenObtainPairView(TokenObtainPairView):

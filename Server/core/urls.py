@@ -12,6 +12,7 @@ from .views import (
     GetUserPostApiView,
     TogglePostLike,
     CreatePostAPIView,
+    FeedView, 
 )
 
 
@@ -33,6 +34,7 @@ urlpatterns = [
         name="toggle_like_post",
     ),
     path("create_post/", CreatePostAPIView.as_view(), name="create_post"),
+    path("feed/", FeedView.as_view(), name="feed")
 ]
 
 if settings.DEBUG:
