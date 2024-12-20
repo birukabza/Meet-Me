@@ -1,60 +1,58 @@
-import { Masonry } from "masonic";
+import { useEffect, useState } from 'react';
+import { Masonry } from 'masonic';
+import { fetchFeed } from '../../api/userApi';
+import { SERVER_URL } from '../../constants/constants';
 
 const Feed = () => {
-  const pins = [
-    { id: 1, image: "https://via.placeholder.com/300x400" },
-    { id: 2, image: "https://via.placeholder.com/350x500" },
-    { id: 3, image: "https://via.placeholder.com/400x300" },
-    { id: 4, image: "https://via.placeholder.com/320x450" },
-    { id: 5, image: "https://via.placeholder.com/300x350" },
-    { id: 6, image: "https://via.placeholder.com/400x500" },
-    { id: 7, image: "https://via.placeholder.com/350x400" },
-    { id: 8, image: "https://via.placeholder.com/300x450" },
-    { id: 1, image: "https://via.placeholder.com/300x400" },
-    { id: 2, image: "https://via.placeholder.com/350x500" },
-    { id: 3, image: "https://via.placeholder.com/400x300" },
-    { id: 4, image: "https://via.placeholder.com/320x450" },
-    { id: 5, image: "https://via.placeholder.com/300x350" },
-    { id: 6, image: "https://via.placeholder.com/400x500" },
-    { id: 7, image: "https://via.placeholder.com/350x400" },
-    { id: 8, image: "https://via.placeholder.com/300x450" },
-    { id: 1, image: "https://via.placeholder.com/300x400" },
-    { id: 2, image: "https://via.placeholder.com/350x500" },
-    { id: 3, image: "https://via.placeholder.com/400x300" },
-    { id: 4, image: "https://via.placeholder.com/320x450" },
-    { id: 5, image: "https://via.placeholder.com/300x350" },
-    { id: 6, image: "https://via.placeholder.com/400x500" },
-    { id: 7, image: "https://via.placeholder.com/350x400" },
-    { id: 8, image: "https://via.placeholder.com/300x450" },
-    { id: 1, image: "https://via.placeholder.com/300x400" },
-    { id: 2, image: "https://via.placeholder.com/350x500" },
-    { id: 3, image: "https://via.placeholder.com/400x300" },
-    { id: 4, image: "https://via.placeholder.com/320x450" },
-    { id: 5, image: "https://via.placeholder.com/300x350" },
-    { id: 6, image: "https://via.placeholder.com/400x500" },
-    { id: 7, image: "https://via.placeholder.com/350x400" },
-    { id: 8, image: "https://via.placeholder.com/300x450" },
-  ];
+  const [items, setItems] = useState([]);
 
-  const MasonryCard = ({ data: { image, id }, width }) => (
-    <div className="relative bg-white rounded-lg shadow-md overflow-hidden">
-      <img
-        src={image}
-        alt={`Pin ${id}`}
-        className="w-full h-auto rounded-lg"
+  const loadMoreData = async () => {
+    try {
+      const data = await fetchFeed();
+      console.log(data)
+      const itemsWithRandomHeight = data.map(item => ({
+        ...item,
+        height: Math.floor(Math.random() * (450 - 200) + 200)
+      }));
+      setItems(itemsWithRandomHeight);
+    } catch (error) {
+      console.error('Error fetching feed:', error);
+    }
+  };
+
+  useEffect(() => {
+    loadMoreData();
+  }, []);
+
+  const renderItem = ({ data: { post_id, image, height } }) => (
+    <div className="masonry-item" key={post_id}>
+      <img 
+        src={`${SERVER_URL}${image}`} 
+        alt="Placeholder" 
+        className="w-full object-cover rounded-lg shadow-sm hover:opacity-95 transition-opacity"
+        style={{ 
+          height: `${height}px`,
+        }}
       />
     </div>
   );
 
   return (
-    <div className="p-6">
-      <Masonry
-        items={pins}
-        render={MasonryCard}
-        columnGutter={16} 
-        columnWidth={300} 
-        overscanBy={2}
-      />
+    <div className="feed-container py-6 px-4">
+      <div className="masonry-container max-w-7xl mx-auto">
+        <Masonry
+          items={items}
+          columnWidth={300}
+          columnGutter={20}
+          columnCount={window.innerWidth > 1536 ? 5 : 
+                       window.innerWidth > 1280 ? 4 : 
+                       window.innerWidth > 768 ? 3 : 
+                       window.innerWidth > 640 ? 2 : 1}
+          overscanBy={5}
+          render={renderItem}
+        />
+      </div>
+      
     </div>
   );
 };
