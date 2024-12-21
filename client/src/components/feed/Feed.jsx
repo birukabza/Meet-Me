@@ -58,14 +58,14 @@ const Feed = () => {
       <div className="text-center py-6">
         {hasMore ? (
           <button
-            className="load-more-button bg-blue-500 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-600 transition"
+            className="load-more-button bg-black text-white px-4 py-2 rounded-lg shadow hover:bg-gray-600 transition"
             onClick={loadMoreData}
             disabled={isLoading}
           >
             {isLoading ? 'Loading...' : 'Load More'}
           </button>
         ) : (
-          <p className="text-gray-500">No more posts to load</p>
+          <p className="text-white">No more posts to load</p>
         )}
       </div>
     </div>

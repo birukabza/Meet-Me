@@ -296,7 +296,17 @@ class FeedView(APIView):
     def get(self, request):
         posts = Post.objects.prefetch_related('likes').all()
 
+
         paginator = FeedPagination()
+        page_number = request.query_params.get('page', 1)
+        total_posts = posts.count()
+        total_pages = (total_posts + paginator.page_size - 1) // paginator.page_size
+        if int(page_number) > total_pages:
+            Response(
+                {"success": False,
+                "error": "page_not_found",},
+                status=status.HTTP_404_NOT_FOUND,
+            )
         paginated_posts = paginator.paginate_queryset(posts, request)
 
         serializer = PostSerializer(paginated_posts, many=True)

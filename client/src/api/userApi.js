@@ -142,7 +142,10 @@ export const fetchFeed = async (val) => {
 
         const response  = await apiClient.get(`feed/?page=${val}`)
         return response.data.results
-    }catch{
+    }catch(error){
+        if (error.response.data.detail === "Invalid page."){
+            return []
+        }
         throw(
             "An error occurred while fetching feed"
         )
