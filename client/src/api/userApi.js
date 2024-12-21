@@ -137,10 +137,10 @@ export const createPost = async (postData) => {
     }
 };
 
-export const fetchFeed = async () => {
+export const fetchFeed = async (val) => {
     try{
 
-        const response  = await apiClient.get("feed/")
+        const response  = await apiClient.get(`feed/?page=${val}`)
         return response.data.results
     }catch{
         throw(

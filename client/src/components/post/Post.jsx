@@ -8,7 +8,7 @@ import { toggleLike } from "../../api/userApi";
 
 import { useState } from "react";
 
-const Post = ({ post }) => {
+const Post = ({ post, masonry = false }) => {
   const [isLiked, setIsLiked] = useState(post.is_liked || false);
   const [likesCount, setLikesCount] = useState(post.likes_count);
 
@@ -31,13 +31,14 @@ const Post = ({ post }) => {
   return (
     <div
       key={post.post_id}
-      className="aspect-square overflow-hidden group relative"
+      className={ masonry? "overflow-hidden group relative" :"aspect-square overflow-hidden group relative" }
     >
       <div className="w-full h-full transition-opacity duration-300 group-hover:opacity-50">
         <img
           src={`${SERVER_URL}${post.image}`}
           alt="image of the user posts"
-          className="w-full h-full object-cover"
+          className={`w-full h-full object-cover ${masonry ?"rounded-lg": ""}`}
+          style={{ height: post.height || "100%" }}
         />
         <div className="hidden w-full h-full bg-gray-800 p-4">
           <p className="text-white text-lg">{post.content}</p>
@@ -66,7 +67,9 @@ Post.propTypes = {
     image: PropTypes.string,
     likes_count: PropTypes.number.isRequired,
     is_liked: PropTypes.bool,
+    height  : PropTypes.number,
   }).isRequired,
+  masonry: PropTypes.bool,
 };
 
 export default Post;
