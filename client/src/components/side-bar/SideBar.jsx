@@ -36,6 +36,9 @@ const SideBar = () => {
       <Link to={redirectTo}>
         <SideBarIcons icon={<IoPersonCircleSharp size="30" />} text="Profile" />
       </Link>
+      {!isAuthenticated && <Link to="/signin">
+      <div className="bg-red-600 w-28 mt-8 h-10 rounded-lg flex justify-center items-center hover:bg-red-500"> <span className="text-center">Sign in</span></div>
+      </Link>}
     </div>
   );
 };
