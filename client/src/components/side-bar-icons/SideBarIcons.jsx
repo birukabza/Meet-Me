@@ -1,12 +1,17 @@
-const SideBarIcons = ({ icon, logo, text }) => {
+import PropTypes from "prop-types";
+const SideBarIcons = ({ icon, text }) => {
+    
     return (
-        <div className="side-bar-icons group">
-            {logo ? <img src={icon} alt="Company Logo" /> : icon}
-            {text ? (
-                <span className="side-bar-side-text group-hover:scale-100">{text}</span>
-            ) : null}
+        <div className="flex gap-4 justify-center items-center w-full hover:bg-gray-700 transition-all ease-in-out duration-300 rounded-lg p-2">
+
+            <div className="text-secondary">{ icon }</div>
+            <span className="text-white text-lg">{text}</span>
+
         </div>
     );
 };
-
+SideBarIcons.propTypes = {
+    icon: PropTypes.element.isRequired,
+    text: PropTypes.string.isRequired,
+}
 export default SideBarIcons;
