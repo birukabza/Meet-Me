@@ -15,6 +15,8 @@ class UserProfileSerializer(serializers.ModelSerializer):
             "username",
             "bio",
             "avatar",
+            "first_name",
+            "last_name",
             "followers_count",
             "following_count",
             "post_count",
