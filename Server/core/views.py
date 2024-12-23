@@ -1,4 +1,5 @@
 from rest_framework.views import APIView
+from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 from rest_framework.exceptions import NotFound, AuthenticationFailed
 from rest_framework.permissions import IsAuthenticated
@@ -10,8 +11,10 @@ from rest_framework_simplejwt.exceptions import (
 )
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.parsers import MultiPartParser, FormParser
+from django_filters.rest_framework import DjangoFilterBackend
 from .models import UserProfile, Post
 from .serializers import UserProfileSerializer, RegistrationSerializer, PostSerializer
+from .filters import UserProfileFilter
 import logging
 
 logger = logging.getLogger(__name__)
@@ -319,11 +322,18 @@ class FeedView(APIView):
 
         return paginator.get_paginated_response(serialized_data)
 
+class SearchUserView(ListAPIView):
+    """
+    Filter users based on the search query
+    """
+    serializer_class = UserProfileSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = UserProfileFilter
 
-
-
-    
-
+    def get_queryset(self):
+        if self.request.query_params.get('search'):
+            return UserProfile.objects.all()
+        return UserProfile.objects.none()
 
 class CustomTokenObtainPairView(TokenObtainPairView):
     def post(self, request, *args, **kwargs):
