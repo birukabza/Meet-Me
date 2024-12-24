@@ -8,6 +8,7 @@ import { FaTimes } from "react-icons/fa";
 import { IoIosPeople } from "react-icons/io";
 import { SearchUserApi } from "../../api/userApi";
 import AuthContext from "../../contexts/AuthContext";
+import { SERVER_URL } from "../../constants/constants";
 
 const SideBar = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -39,7 +40,7 @@ const SideBar = () => {
   const fetchSearchResults = async (query) => {
     try {
       const data = await SearchUserApi(query);
-      setSearchResults(data.results); 
+      setSearchResults(data.results);
     } catch (error) {
       console.error(error);
     }
@@ -95,7 +96,7 @@ const SideBar = () => {
                 />
                 <button
                   className="absolute right-2 top-1/2 transform -translate-y-1/2 text-white"
-                  onClick={()=>setSearchQuery("")}
+                  onClick={() => setSearchQuery("")}
                 >
                   <FaTimes size="20" />
                 </button>
@@ -104,13 +105,29 @@ const SideBar = () => {
                 {searchResults.length > 0 ? (
                   <ul>
                     {searchResults.map((user) => (
-                      <li key={user.user_id} className="py-2 border-b border-gray-600">
+                      <li key={user.user_id} className="py-2">
                         <Link
                           to={`/profile/${user.username}`}
-                          className="text-secondary hover:underline"
+                          className="text-white cursor-pointer "
                           onClick={handleClose}
                         >
-                          {user.username} ({user.first_name} {user.last_name})
+                          <div className="flex items-end">
+                            {user.avatar ?
+                          <img src={`${SERVER_URL}${user.avatar.split("8000")[1]}`} alt="" className="size-7 rounded-full"/>
+                          :
+                          <IoPersonCircleSharp size={32}/>
+                             }
+
+                          <div className="flex flex-col pl-2">
+                            <h3 className="text-md font-semibold">
+                              {user.first_name} {user.last_name }
+                            </h3>
+
+                            <p className="text-zinc-400">
+                              @{user.username}
+                            </p>
+                          </div>
+                          </div>
                         </Link>
                       </li>
                     ))}
