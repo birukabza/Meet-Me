@@ -59,12 +59,12 @@ const Posts = ({ username }) => {
   return (
     <div className="mt-6 w-full flex justify-center">
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 max-w-full w-full px-4">
-        {username === currentUsername && (
+        {username === currentUsername && posts.length >0 && (
           <div
             className="flex flex-col justify-center items-center"
             onClick={() => setShowCreatePostModal(true)}
           >
-            <PlusSign />{" "}
+            <PlusSign />
             Add your work
           </div>
         )}

@@ -125,7 +125,7 @@ class GetUserPostApiView(APIView):
             posts = user.posts.all()
             serializer = PostSerializer(posts, many=True)
             serialized_data = serializer.data
-            
+
             for post in serialized_data:
                 post_obj = posts.get(post_id=post["post_id"])
                 post["is_liked"] = request.user in post_obj.likes.all()
@@ -134,7 +134,7 @@ class GetUserPostApiView(APIView):
                 {"success": True, "data": serialized_data},
                 status=status.HTTP_200_OK,
             )
-            
+
         except Exception as e:
             logger.error(f"An error occurred while serializing the user data: {str(e)}")
             return Response(
@@ -289,25 +289,27 @@ class ToggleFollowView(APIView):
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
 
+
 class FeedPagination(PageNumberPagination):
     page_size = 35
-    page_size_query_param = 'page_size'
+    page_size_query_param = "page_size"
     max_page_size = 80
 
 
 class FeedView(APIView):
     def get(self, request):
-        posts = Post.objects.prefetch_related('likes').all()
-
+        posts = Post.objects.prefetch_related("likes").all()
 
         paginator = FeedPagination()
-        page_number = request.query_params.get('page', 1)
+        page_number = request.query_params.get("page", 1)
         total_posts = posts.count()
         total_pages = (total_posts + paginator.page_size - 1) // paginator.page_size
         if int(page_number) > total_pages:
             Response(
-                {"success": False,
-                "error": "page_not_found",},
+                {
+                    "success": False,
+                    "error": "page_not_found",
+                },
                 status=status.HTTP_404_NOT_FOUND,
             )
         paginated_posts = paginator.paginate_queryset(posts, request)
@@ -322,18 +324,28 @@ class FeedView(APIView):
 
         return paginator.get_paginated_response(serialized_data)
 
+
+class SearchUserPagination(PageNumberPagination):
+    page_size = 12
+    page_size_query_param = "page_size"
+    max_page_size = 100
+
+
 class SearchUserView(ListAPIView):
     """
-    Filter users based on the search query
+    Filter users based on their username, first_name, last_name
     """
+
     serializer_class = UserProfileSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_class = UserProfileFilter
+    pagination_class = SearchUserPagination
 
     def get_queryset(self):
-        if self.request.query_params.get('search'):
+        if self.request.query_params.get("search"):
             return UserProfile.objects.all()
         return UserProfile.objects.none()
+
 
 class CustomTokenObtainPairView(TokenObtainPairView):
     def post(self, request, *args, **kwargs):

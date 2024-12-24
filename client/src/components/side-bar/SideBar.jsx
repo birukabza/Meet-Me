@@ -1,20 +1,18 @@
 import { useContext, useState, useRef, useEffect } from "react";
-
 import { Link } from "react-router-dom";
-
 import SideBarIcons from "../side-bar-icons/SideBarIcons";
-
 import logo from "../../assets/Meet-Me-Logo.png";
-
 import { IoPersonCircleSharp } from "react-icons/io5";
 import { FaSearch, FaHome } from "react-icons/fa";
+import { FaTimes } from "react-icons/fa";
 import { IoIosPeople } from "react-icons/io";
-
 import AuthContext from "../../contexts/AuthContext";
 
 const SideBar = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
   const searchRef = useRef(null);
   const searchIconRef = useRef(null);
   const { isAuthenticated, currentUsername } = useContext(AuthContext);
@@ -37,6 +35,29 @@ const SideBar = () => {
     };
   }, []);
 
+  const fetchSearchResults = async (query) => {
+    try {
+      const response = await fetch(`http://127.0.0.1:8000/api/search_user/?search=${query}`);
+      if (!response.ok) {
+        throw new Error("Failed to fetch search results.");
+      }
+      const data = await response.json();
+      setSearchResults(data.results); 
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleSearchChange = (e) => {
+    const query = e.target.value;
+    setSearchQuery(query);
+    if (query) {
+      fetchSearchResults(query);
+    } else {
+      setSearchResults([]);
+    }
+  };
+
   const toggleSearch = () => {
     if (isSearchOpen) {
       handleClose();
@@ -46,6 +67,8 @@ const SideBar = () => {
   };
 
   const handleClose = () => {
+    setSearchQuery("");
+    setSearchResults([]);
     setIsClosing(true);
     setTimeout(() => {
       setIsSearchOpen(false);
@@ -68,24 +91,43 @@ const SideBar = () => {
                 <input
                   type="text"
                   placeholder="Search"
+                  value={searchQuery}
+                  onChange={handleSearchChange}
                   className="w-full bg-gray-700 rounded-lg py-2 px-4 pr-10 focus:outline-none"
+                  autoFocus
                 />
                 <button
                   className="absolute right-2 top-1/2 transform -translate-y-1/2 text-white"
-                  onClick={handleClose}
+                  onClick={()=>setSearchQuery("")}
                 >
-                  <FaSearch size="20" />
+                  <FaTimes size="20" />
                 </button>
               </div>
               <div className="mt-6">
-                
+                {searchResults.length > 0 ? (
+                  <ul>
+                    {searchResults.map((user) => (
+                      <li key={user.id} className="py-2 border-b border-gray-600">
+                        <Link
+                          to={`/profile/${user.username}`}
+                          className="text-secondary hover:underline"
+                          onClick={handleClose}
+                        >
+                          {user.username} ({user.first_name} {user.last_name})
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-gray-400">No results found.</p>
+                )}
               </div>
             </div>
           </div>
         </div>
       )}
 
-      <div className={`flex flex-col fixed top-0 left-0 h-screen text-white bg-primary shadow-xl p-4 z-10 items-center gap-6 pt-8 ${isSearchOpen ? "w-24":"w-36"}`}>
+      <div className={`flex flex-col fixed top-0 left-0 h-screen text-white bg-primary shadow-xl p-4 z-10 items-center gap-6 pt-8 ${isSearchOpen ? "w-24" : "w-36"}`}>
         <Link to="/">
           <img
             src={logo}
@@ -94,8 +136,10 @@ const SideBar = () => {
           />
         </Link>
         <Link to="/">
-          <SideBarIcons icon={<FaHome size="25" />}
-            text={!isSearchOpen ? "Home" : ""} />
+          <SideBarIcons
+            icon={<FaHome size="25" />}
+            text={!isSearchOpen ? "Home" : ""}
+          />
         </Link>
         <button onClick={toggleSearch} ref={searchIconRef}>
           <SideBarIcons
@@ -104,7 +148,10 @@ const SideBar = () => {
           />
         </button>
         <Link>
-          <SideBarIcons icon={<IoIosPeople size="25" />} text={!isSearchOpen ? "Friends" : ""} />
+          <SideBarIcons
+            icon={<IoIosPeople size="25" />}
+            text={!isSearchOpen ? "Friends" : ""}
+          />
         </Link>
         <Link to={redirectTo}>
           <SideBarIcons
