@@ -151,3 +151,15 @@ export const fetchFeed = async (val) => {
         )
     }
 }
+
+export const SearchUserApi = async (query) => {
+    try {
+        const response = await apiClient.get(`search_user/?search=${query}`);
+        return response.data;
+    } catch (error) {
+        throw (
+            error.response?.data?.error ||
+            `An error occurred while searching for ${query}`
+        );
+    }
+};

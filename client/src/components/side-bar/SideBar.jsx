@@ -6,6 +6,7 @@ import { IoPersonCircleSharp } from "react-icons/io5";
 import { FaSearch, FaHome } from "react-icons/fa";
 import { FaTimes } from "react-icons/fa";
 import { IoIosPeople } from "react-icons/io";
+import { SearchUserApi } from "../../api/userApi";
 import AuthContext from "../../contexts/AuthContext";
 
 const SideBar = () => {
@@ -37,11 +38,7 @@ const SideBar = () => {
 
   const fetchSearchResults = async (query) => {
     try {
-      const response = await fetch(`http://127.0.0.1:8000/api/search_user/?search=${query}`);
-      if (!response.ok) {
-        throw new Error("Failed to fetch search results.");
-      }
-      const data = await response.json();
+      const data = await SearchUserApi(query);
       setSearchResults(data.results); 
     } catch (error) {
       console.error(error);
@@ -107,7 +104,7 @@ const SideBar = () => {
                 {searchResults.length > 0 ? (
                   <ul>
                     {searchResults.map((user) => (
-                      <li key={user.id} className="py-2 border-b border-gray-600">
+                      <li key={user.user_id} className="py-2 border-b border-gray-600">
                         <Link
                           to={`/profile/${user.username}`}
                           className="text-secondary hover:underline"
