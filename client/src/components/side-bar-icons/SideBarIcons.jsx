@@ -12,6 +12,6 @@ const SideBarIcons = ({ icon, text }) => {
 };
 SideBarIcons.propTypes = {
     icon: PropTypes.element.isRequired,
-    text: PropTypes.string.isRequired,
+    text: PropTypes.string,
 }
 export default SideBarIcons;
