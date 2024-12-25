@@ -14,7 +14,8 @@ from .views import (
     CreatePostAPIView,
     FeedView, 
     SearchUserView,
-    EditProfileView
+    EditProfileView, 
+    logout,
 )
 
 
@@ -39,6 +40,7 @@ urlpatterns = [
     path("feed/", FeedView.as_view(), name="feed"),
     path("search_user/", SearchUserView.as_view(), name="search_user"),
     path("edit_profile/", EditProfileView.as_view(), name="edit_profile"),
+    path("logout/", logout, name="logout"),
 ]
 
 if settings.DEBUG:
