@@ -1,5 +1,6 @@
 from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.exceptions import NotFound, AuthenticationFailed
 from rest_framework.permissions import IsAuthenticated
@@ -18,6 +19,8 @@ from .filters import UserProfileFilter
 import logging
 
 logger = logging.getLogger(__name__)
+
+
 
 
 class UserProfileApiView(APIView):
@@ -330,7 +333,6 @@ class SearchUserPagination(PageNumberPagination):
     page_size_query_param = "page_size"
     max_page_size = 100
 
-
 class SearchUserView(ListAPIView):
     """
     Filter users based on their username, first_name, last_name
@@ -345,6 +347,46 @@ class SearchUserView(ListAPIView):
         if self.request.query_params.get("search"):
             return UserProfile.objects.all()
         return UserProfile.objects.none()
+
+class EditProfileView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def patch(self, request):
+        try:
+            user = request.user
+            serializer = UserProfileSerializer(
+                user, data=request.data, partial=True
+            )
+
+            if serializer.is_valid():
+                serializer.save()
+                return Response(
+                    {
+                        "success": True,
+                        "data": serializer.data,
+                    },
+                    status=status.HTTP_200_OK,
+                )
+            return Response(
+                {
+                    "success": False,
+                    "error": "validation_error",
+                    "detail": serializer.errors,
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        except Exception as e:
+            logger.error(f"Unexpected error in EditProfileView: {str(e)}")
+            return Response(
+                {
+                    "success": False,
+                    "error": "internal_server_error",
+                    "detail": "An unexpected error occurred while updating the profile.",
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+    
+
 
 
 class CustomTokenObtainPairView(TokenObtainPairView):

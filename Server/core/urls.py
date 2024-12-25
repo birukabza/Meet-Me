@@ -14,6 +14,7 @@ from .views import (
     CreatePostAPIView,
     FeedView, 
     SearchUserView,
+    EditProfileView
 )
 
 
@@ -37,6 +38,7 @@ urlpatterns = [
     path("create_post/", CreatePostAPIView.as_view(), name="create_post"),
     path("feed/", FeedView.as_view(), name="feed"),
     path("search_user/", SearchUserView.as_view(), name="search_user"),
+    path("edit_profile/", EditProfileView.as_view(), name="edit_profile"),
 ]
 
 if settings.DEBUG:
