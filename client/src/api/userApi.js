@@ -71,6 +71,17 @@ export const signUpApi = async (userData) => {
     }
 };
 
+export const signOutApi = async () => {
+    try {
+        const response = await apiClient.get("logout/");
+        return response.data;
+    } catch (error) {
+        throw (
+            error.response?.data?.error || "An error occurred while logging out"
+        );
+    }
+}
+
 export const getAuth = async () => {
     try {
         const response = await apiClient.get(`/auth/status/`);
