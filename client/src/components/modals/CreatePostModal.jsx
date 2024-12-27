@@ -25,8 +25,8 @@ const CreatePostModal = ({ onClose, onCreateNewPost }) => {
                 return;
             }
     
-            if (file.size > 5 * 1024 * 1024) {  // Limit file size to 5MB
-                alert('File size exceeds 5MB.');
+            if (file.size > 10 * 1024 * 1024) {  // Limit file size to 5MB
+                alert('File size exceeds 10MB.');
                 return;
             }
     
@@ -60,7 +60,6 @@ const CreatePostModal = ({ onClose, onCreateNewPost }) => {
         setError(null);
 
         try {
-            console.log(imageBlob)
             const response = await createPost({ image: imageBlob, content: caption });
             if (response.success) {
                 alert("Post successfully created!");
@@ -131,8 +130,8 @@ const CreatePostModal = ({ onClose, onCreateNewPost }) => {
                     <FaTimes size={30} />
                 </button>
 
-                <div className="flex justify-center items-center" onClick={handleSubmit}>
-                    <CustomButton width="14" disabled={isPosting}>
+                <div className="flex justify-center items-center tracking-widest" onClick={handleSubmit}>
+                    <CustomButton width="w-20" disabled={isPosting}>
                         {isPosting ? "Posting..." : "Post"}
                     </CustomButton>
                 </div>

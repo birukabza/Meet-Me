@@ -197,7 +197,6 @@ class CreatePostAPIView(APIView):
     def post(self, request):
         try:
             user = request.user
-            print(request.data)
             serializer = PostSerializer(
                 data=request.data,
             )
@@ -357,7 +356,7 @@ class EditProfileView(APIView):
             serializer = UserProfileSerializer(
                 user, data=request.data, partial=True
             )
-
+            print(request.data)
             if serializer.is_valid():
                 serializer.save()
                 return Response(
@@ -367,6 +366,7 @@ class EditProfileView(APIView):
                     },
                     status=status.HTTP_200_OK,
                 )
+            print(serializer.errors)
             return Response(
                 {
                     "success": False,
@@ -388,7 +388,6 @@ class EditProfileView(APIView):
     
 
 
-
 class CustomTokenObtainPairView(TokenObtainPairView):
     def post(self, request, *args, **kwargs):
         try:
@@ -398,11 +397,40 @@ class CustomTokenObtainPairView(TokenObtainPairView):
 
             access_token = tokens.get("access")
             refresh_token = tokens.get("refresh")
+            username = request.data.get("username")
+
+            try:
+                user = UserProfile.objects.get(username=username)
+            except UserProfile.DoesNotExist:
+                raise NotFound(
+                    {
+                        "success": False,
+                        "error": "user_not_found",
+                        "detail": f"The requested user with username {username} does not exist.",
+                    }
+                )
+            
+            try:
+                serializer = UserProfileSerializer(user, many=False)
+            except Exception as e:
+                logger.error(
+                    f"An error occurred while serializing the user data: {str(e)}"
+                )
+                return Response(
+                    {
+                        "success": False,
+                        "error": "serialization_error",
+                        "detail": f"An error occurred while serializing the user data: {str(e)}",
+                    },
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                )
 
             res = Response(
                 {
                     "success": True,
                     "message": "Login Successful",
+                    "user": serializer.data,
+                    
                 },
                 status=status.HTTP_200_OK,
             )

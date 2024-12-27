@@ -96,7 +96,7 @@ const SideBar = () => {
                 />
                 <button
                   className="absolute right-2 top-1/2 transform -translate-y-1/2 text-white"
-                  onClick={() => setSearchQuery("")}
+                  onClick={() => {setSearchQuery(""); setSearchResults("")}}
                 >
                   <FaTimes size="20" />
                 </button>
@@ -146,7 +146,7 @@ const SideBar = () => {
           <img
             src={logo}
             alt="Company Logo"
-            className="size-16 shadow-sm shadow-gray-700 rounded-lg mb-4"
+            className="size-16 shadow-sm shadow-secondary rounded-lg mb-4"
           />
         </Link>
         <Link to="/">

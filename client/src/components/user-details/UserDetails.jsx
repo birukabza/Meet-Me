@@ -16,6 +16,8 @@ const UserDetails = ({ username }) => {
     const [postsCount, setPostsCount] = useState(0);
     const [avatarUrl, setAvatarUrl] = useState("");
     const [bio, setBio] = useState("");
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
     const [showEditProfile, setShowEditProfile] = useState(false);
     const [isFollowing, setIsFollowing] = useState(false);
 
@@ -30,6 +32,8 @@ const UserDetails = ({ username }) => {
                 setFollowerCount(userData.followers_count);
                 setFollowingCount(userData.following_count);
                 setPostsCount(userData.post_count);
+                setFirstName(userData.first_name);
+                setLastName(userData.last_name);
             } catch (error) {
                 console.log(error, "error occurred while getting user data");
             } finally {
@@ -115,6 +119,11 @@ const UserDetails = ({ username }) => {
                         <span>{loading ? "-" : followingCount}</span>
                         <p>following</p>
                     </div>
+                </div>
+
+                <div className="flex gap-1">
+                    <h3>{firstName}</h3>
+                    <h3>{lastName}</h3>
                 </div>
 
                 <div className="mt-4">

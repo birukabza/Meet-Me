@@ -33,9 +33,19 @@ export const AuthProvider = ({ children }) => {
     const authSignIn = async (username, password) => {
         try {
             const response = await signInApi(username, password);
-    
+            const userData = response.user;
+            localStorage.setItem("user", JSON.stringify({
+                "user_id": userData.user_id, 
+                "username": userData.username,
+                "first_name": userData.first_name,
+                "last_name": userData.last_name,
+                "bio": userData.bio,
+                "avatar": userData.avatar,
+            }))
             if (response.success) {
-                window.location.href = `/profile/${username}`;
+                setTimeout(() => {
+                    window.location.href = `/profile/${username}`;
+                }, 1000);
             } else {
                 alert(response.message || 'Invalid username or password');
             }

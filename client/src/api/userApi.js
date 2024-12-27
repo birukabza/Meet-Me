@@ -163,3 +163,25 @@ export const SearchUserApi = async (query) => {
         );
     }
 };
+
+export const updateUserData = async (userData) => {
+    const formData = new FormData();
+    formData.append("avatar", userData.avatar);
+    formData.append("bio", userData.bio);
+    formData.append("first_name", userData.first_name);
+    formData.append("last_name", userData.last_name);
+
+    try{
+        const response = await apiClient.patch("edit_profile/", formData, {
+            headers: {
+                "Content-Type": "multipart/form-data", 
+            },
+        });
+        return response.data
+    }catch(error){
+        throw (
+            error.response?.data?.error ||
+            "An error occurred while updating user data"
+        );
+    }
+}

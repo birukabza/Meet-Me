@@ -15,7 +15,6 @@ const Feed = () => {
     setIsLoading(true);
     try {
       const data = await fetchFeed(page); 
-      console.log(data)
       if (data.length > 0) {
         const itemsWithRandomHeight = data.map(item => ({
           ...item,
