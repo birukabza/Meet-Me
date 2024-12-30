@@ -385,7 +385,34 @@ class EditProfileView(APIView):
                 },
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
-    
+
+
+class SinglePostView(APIView):
+    def get(self, request, post_id):
+        try:
+            post = Post.objects.get(post_id=post_id)
+        except Post.DoesNotExist:
+            raise NotFound(
+                {
+                    "success": False,
+                    "error": "post_not_found",
+                    "detail": f"Post with ID {post_id} does not exist.",
+                }
+            )
+        
+        serializer = PostSerializer(post, many=False)
+        return Response(
+            {
+                "success": True,
+                "data": serializer.data
+            },
+            status=status.HTTP_200_OK
+        )
+
+
+
+        
+
 
 
 class CustomTokenObtainPairView(TokenObtainPairView):
