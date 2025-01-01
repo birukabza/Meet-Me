@@ -10,6 +10,7 @@ Icon
 
 .venv/
 .env
+core/dummy_data
 
 # Thumbnails
 ._*
