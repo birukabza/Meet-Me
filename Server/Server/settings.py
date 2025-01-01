@@ -3,17 +3,27 @@
 import os
 from pathlib import Path
 from datetime import timedelta
+from dotenv import load_dotenv, find_dotenv
 
+# cloudinary imports
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
+
+# Load environment variables
+load_dotenv(find_dotenv())
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-@a+orpdxq7-ia&o38udwl*niw7f(4k5(=zkk3vdwcnvhzrrxx+"
+SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -34,6 +44,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "rest_framework_simplejwt",
     'django_filters',
+    "cloudinary",
     "core.apps.CoreConfig",
 ]
 
@@ -153,3 +164,9 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+# cloudinary config
+cloudinary.config(
+    cloud_name = os.getenv("CLOUDINARY_CLOUD_NAME"),
+    api_key = os.getenv("CLOUDINARY_API_KEY"),
+    api_secret = os.getenv("CLOUDINARY_API_SECRET")
+)

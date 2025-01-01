@@ -1,16 +1,18 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from rest_framework.exceptions import ValidationError
+from cloudinary.models import CloudinaryField
 
 
 class UserProfile(AbstractUser):
     user_id = models.AutoField(primary_key=True)
     username = models.CharField(max_length=50, unique=True)
     bio = models.TextField(blank=True, null=True)
-    avatar = models.ImageField(upload_to="avatar_image/", blank=True)
+    avatar = CloudinaryField("image", blank=True, null=True)
     followers = models.ManyToManyField(
         "self", symmetrical=False, related_name="following", blank=True
     )
+
 
     def clean(self):
         if self.bio:
@@ -35,7 +37,7 @@ class Post(models.Model):
     content = models.TextField(max_length=1000, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    image = models.ImageField(upload_to="post_images/", default="post_images/default.png",blank=False, null=False)
+    image = CloudinaryField("image", blank=False, null=False)
     likes = models.ManyToManyField(UserProfile, related_name="liked_posts", blank=True)
 
     # over riding the built in save method

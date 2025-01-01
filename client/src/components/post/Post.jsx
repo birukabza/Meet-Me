@@ -1,16 +1,17 @@
 import PropTypes from "prop-types";
 
-import { SERVER_URL } from "../../constants/constants";
-
 import { FaHeart } from "react-icons/fa6";
 
 import { toggleLike } from "../../api/userApi";
 
 import { useState } from "react";
 
+import { CLOUDINARY_BASE_URL } from "../../constants/constants";
+
 const Post = ({ post, masonry = false }) => {
   const [isLiked, setIsLiked] = useState(post.is_liked || false);
   const [likesCount, setLikesCount] = useState(post.likes_count);
+  console.log(post.image);
 
   const handleLikeClick = async () => {
     try {
@@ -27,6 +28,15 @@ const Post = ({ post, masonry = false }) => {
       console.error("Error toggling like:", error);
     }
   };
+  const handleImage = (image) => {
+    if (image.includes('https://')) {
+      return  `https:${post.image.split(":")[1]}`
+    } 
+    
+    return `${CLOUDINARY_BASE_URL}${image}`;
+  }
+  
+  const imageUrl = handleImage(post.image);
 
   return (
     <div
@@ -35,7 +45,7 @@ const Post = ({ post, masonry = false }) => {
     >
       <div className="w-full h-full transition-opacity duration-300 group-hover:opacity-50">
         <img
-          src={`${SERVER_URL}${post.image}`}
+          src={imageUrl}
           alt="image of the user posts"
           className={`w-full h-full object-cover ${masonry ?"rounded-lg": ""}`}
           style={{ height: post.height || "100%" }}

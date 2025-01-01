@@ -356,7 +356,6 @@ class EditProfileView(APIView):
             serializer = UserProfileSerializer(
                 user, data=request.data, partial=True
             )
-            print(request.data)
             if serializer.is_valid():
                 serializer.save()
                 return Response(

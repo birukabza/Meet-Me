@@ -196,3 +196,15 @@ export const updateUserData = async (userData) => {
         );
     }
 }
+
+export const singlePost = async (post_id) => {
+    try {
+        const response = await apiClient.get(`post/${post_id}`)
+        return response.data
+    } catch(error){
+        throw (
+            error.response?.data?.error ||
+            "An error occurred while fetching post"
+        )
+    }
+}

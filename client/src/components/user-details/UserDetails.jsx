@@ -5,7 +5,7 @@ import { fetchUserProfile, toggleFollow, signOutApi } from "../../api/userApi";
 
 import { useEffect, useState } from "react";
 
-import { SERVER_URL } from "../../constants/constants";
+import { CLOUDINARY_BASE_URL } from "../../constants/constants";
 
 import { Link, useNavigate } from "react-router-dom";
 
@@ -70,13 +70,14 @@ const UserDetails = ({ username }) => {
             alert("error occurred while signing out");
         }
     }
+    
     return (
         <>
             <div className="flex justify-center  mb-10">
                 <div className="relative size-48">
                     {avatarUrl ? (
                         <img
-                            src={`${SERVER_URL}${avatarUrl}`}
+                            src={`${CLOUDINARY_BASE_URL}${avatarUrl}`}
                             alt="User Avatar"
                             className="w-full h-full rounded-full object-cover border-4 border-primary shadow-md"
                         />

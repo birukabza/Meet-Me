@@ -6,7 +6,7 @@ import { updateUserData } from '../../api/userApi';
 
 import { useNavigate } from "react-router-dom"
 
-import {SERVER_URL} from "../../constants/constants"
+import {CLOUDINARY_BASE_URL} from "../../constants/constants"
 
 function EditProfile() {
     const storedData = JSON.parse(localStorage.getItem("user")) || {
@@ -92,7 +92,7 @@ function EditProfile() {
                     imageUrl ? (
                         <img src={imageUrl} alt="Profile" className="w-full h-full object-cover rounded-full" />
                     ) : storedAvatar ? (
-                        <img src={`${SERVER_URL}${storedAvatar}`} alt="Profile" className="w-full h-full object-cover rounded-full" />
+                        <img src={`${CLOUDINARY_BASE_URL}${storedAvatar}`} alt="Profile" className="w-full h-full object-cover rounded-full" />
                     ) : (
                         <span className="text-gray-500">No avatar</span>
                     )}

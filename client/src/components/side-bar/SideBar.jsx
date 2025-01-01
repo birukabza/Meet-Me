@@ -8,7 +8,7 @@ import { FaTimes } from "react-icons/fa";
 import { IoIosPeople } from "react-icons/io";
 import { SearchUserApi } from "../../api/userApi";
 import AuthContext from "../../contexts/AuthContext";
-import { SERVER_URL } from "../../constants/constants";
+import { CLOUDINARY_BASE_URL } from "../../constants/constants";
 
 const SideBar = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -113,7 +113,7 @@ const SideBar = () => {
                         >
                           <div className="flex items-end">
                             {user.avatar ?
-                          <img src={`${SERVER_URL}${user.avatar.split("8000")[1]}`} alt="" className="size-7 rounded-full"/>
+                          <img src={`${CLOUDINARY_BASE_URL}${user.avatar}`} alt="" className="size-7 rounded-full"/>
                           :
                           <IoPersonCircleSharp size={32}/>
                              }
