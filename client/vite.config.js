@@ -8,7 +8,7 @@ export default defineConfig(({ mode }) => {
 
   const target =
     mode === "production"
-      ? "https://meet-me-backend.onrender.com/"
+      ? "https://meet-me-backend.onrender.com"
       : "http://127.0.0.1:8000";
 
   return {
