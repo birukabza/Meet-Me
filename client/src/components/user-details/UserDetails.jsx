@@ -64,6 +64,7 @@ const UserDetails = ({ username }) => {
         try {
 
             await signOutApi();
+            localStorage.removeItem("user");
             navigate("/");
         }catch (error) {
             console.log(error, "error occurred while signing out");

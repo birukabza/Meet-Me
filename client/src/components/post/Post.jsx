@@ -11,7 +11,6 @@ import { CLOUDINARY_BASE_URL } from "../../constants/constants";
 const Post = ({ post, masonry = false }) => {
   const [isLiked, setIsLiked] = useState(post.is_liked || false);
   const [likesCount, setLikesCount] = useState(post.likes_count);
-  console.log(post.image);
 
   const handleLikeClick = async () => {
     try {

@@ -1,9 +1,6 @@
 import axios from "axios";
-import { SERVER_URL } from "../constants/constants";
 
-const BASE_URL = SERVER_URL;
-
-console.log("Using SERVER_URL:", SERVER_URL);
+const BASE_URL = "/api";
 
 const apiClient = axios.create({
     baseURL: BASE_URL,
