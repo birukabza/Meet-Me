@@ -7,7 +7,7 @@ python manage.py collectstatic --no-input
 python manage.py migrate
 
 # needed for the first time to create superuser
-if [[ $CREATE_SUPERUSER ]];
-then
-    python manage.py createsuperuser --no-input
-fi
+# if [[ $CREATE_SUPERUSER ]];
+# then
+#     python manage.py createsuperuser --no-input
+# fi
