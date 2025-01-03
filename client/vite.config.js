@@ -12,11 +12,15 @@ export default defineConfig(({ mode }) => {
       : env.VITE_SERVER_URL;
 
   return {
-    plugins: [react()],
     server: {
       proxy: {
-        "/api": target
+        "/api": {
+          target: target,
+          changeOrigin: true,
+          secure: false,
+        },
       },
     },
+    plugins: [react()],
   };
 });
