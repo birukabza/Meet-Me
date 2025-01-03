@@ -230,16 +230,6 @@ class CreatePostAPIView(APIView):
             )
 
 
-class AuthStatusView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request):
-        return Response(
-            {
-                "message": "User is authenticated",
-                "username": request.user.username,
-            }
-        )
 
 
 class ToggleFollowView(APIView):
@@ -413,6 +403,16 @@ class SinglePostView(APIView):
         
 
 
+class AuthStatusView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        return Response(
+            {
+                "message": "User is authenticated",
+                "username": request.user.username,
+            }
+        )
 
 class CustomTokenObtainPairView(TokenObtainPairView):
     def post(self, request, *args, **kwargs):
