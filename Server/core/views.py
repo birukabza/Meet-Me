@@ -468,7 +468,7 @@ class CustomTokenObtainPairView(TokenObtainPairView):
                 samesite="None",
                 secure=True,
                 path="/",
-                domain=".onrender.com"
+                domain="https://meet-me-lx8v.onrender.com"
             )
             res.set_cookie(
                 key="refresh_token",
@@ -477,7 +477,7 @@ class CustomTokenObtainPairView(TokenObtainPairView):
                 samesite="None",
                 secure=True,
                 path="/",
-                domain=".onrender.com"
+                domain="https://meet-me-lx8v.onrender.com"
             )
             return res
 
@@ -537,7 +537,7 @@ class CustomTokenRefreshView(TokenRefreshView):
                 secure=True,
                 samesite="None",
                 path="/",
-                domain=".onrender.com"
+                domain="https://meet-me-lx8v.onrender.com"
             )
 
             return res
