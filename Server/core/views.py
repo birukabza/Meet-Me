@@ -424,9 +424,7 @@ class CustomTokenObtainPairView(TokenObtainPairView):
             access_token = tokens.get("access")
             refresh_token = tokens.get("refresh")
             username = request.data.get("username")
-            print("access", access_token)
-            print("refresh", refresh_token)
-            print("username", username)
+            
 
             try:
                 user = UserProfile.objects.get(username=username)

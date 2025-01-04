@@ -25,6 +25,7 @@ MIDDLEWARE = [
 
 CORS_ALLOWED_ORIGINS = [
     "https://meet-me-lx8v.onrender.com",
+    "http:localhost:3000",
 ]
 
 STORAGES = {
