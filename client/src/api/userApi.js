@@ -1,102 +1,130 @@
-const BASE_URL = "/api";
+import axios from "axios";
+import {SERVER_URL} from "../constants/constants"
+const BASE_URL = `${SERVER_URL}/api`;
 
-const fetchRequest = async (url, options = {}) => {
-    const defaultOptions = {
-        credentials: "include",
-        headers: {
-            "Content-Type": "application/json",
-        },
-    };
+const apiClient = axios.create({
+    baseURL: BASE_URL,
+    withCredentials: true,
+});
+apiClient.interceptors.response.use(
+    (response) => response,
+    async (error) => {
+        const originalRequest = error.config;
 
-    const finalOptions = { ...defaultOptions, ...options };
+        if (error.response?.status === 401 && !originalRequest._retry) {
+            originalRequest._retry = true;
 
-    try {
-        const response = await fetch(`${BASE_URL}${url}`, finalOptions);
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw errorData;
+            try {
+                await apiClient.post("/token/refresh/");
+                return apiClient(originalRequest);
+            } catch (refreshError) {
+                return Promise.reject(refreshError);
+            }
         }
-        return response.json();
-    } catch (error) {
-        throw error;
+
+        return Promise.reject(error);
     }
-};
+);
 
 export const fetchUserProfile = async (username) => {
     try {
-        return await fetchRequest(`/user/${username}/`);
+        const response = await apiClient.get(`/user/${username}/`);
+        return response.data;
     } catch (error) {
-        throw error?.error || "An error occurred while fetching user data";
+        throw (
+            error.response?.data?.error ||
+            "An error occurred while fetching user data"
+        );
     }
 };
 
 export const signInApi = async (username, password) => {
     try {
-        return await fetchRequest("/token/", {
-            method: "POST",
-            body: JSON.stringify({ username, password }),
+        const response = await apiClient.post("token/", {
+            username,
+            password,
         });
+        return response.data;
     } catch (error) {
-        if (error.status === 401) {
+        if (error.response && error.response.status === 401) {
             return { success: false, message: "Invalid username or password" };
         }
+        console.log(error, "Error while logging in");
         throw error;
     }
 };
 
 export const signUpApi = async (userData) => {
     try {
-        const response = await fetchRequest("/register/", {
-            method: "POST",
-            body: JSON.stringify(userData),
-        });
-        return response;
+        const response = await apiClient.post("register/", userData);
+        if (response.status === 201) {
+            return response.data;
+        }
+        throw new Error("Signup failed");
     } catch (error) {
+        console.error(
+            "Signup Error:",
+            error.response ? error.response.data : error.message
+        );
         throw error;
     }
 };
 
 export const signOutApi = async () => {
     try {
-        return await fetchRequest("/logout/");
+        const response = await apiClient.get("logout/");
+        return response.data;
     } catch (error) {
-        throw error?.error || "An error occurred while logging out";
+        throw (
+            error.response?.data?.error || "An error occurred while logging out"
+        );
     }
-};
+}
 
 export const getAuth = async () => {
     try {
-        return await fetchRequest("/auth/status/");
+        const response = await apiClient.get(`/auth/status/`);
+        return response.data;
     } catch (error) {
-        throw error?.error || "An error occurred while authenticating";
+        throw (
+            error.response?.data?.error || "An error occurred while authenticating"
+        );
     }
 };
 
 export const toggleFollow = async (username) => {
     try {
-        return await fetchRequest(`/toggle_follow/${username}/`, {
-            method: "POST",
-        });
+        const response = await apiClient.post(`toggle_follow/${username}/`);
+        return response.data;
     } catch (error) {
-        throw error?.error || `An error occurred while attempting to toggle follow ${username}`;
+        throw (
+            error.response?.data?.error ||
+            `An error occurred while attempting to toggle follow ${username}`
+        );
     }
 };
 
 export const toggleLike = async (post_id) => {
     try {
-        return await fetchRequest(`/toggle_like_post/${post_id}/`, {
-            method: "POST",
-        });
+        const response = await apiClient.post(`toggle_like_post/${post_id}/`);
+        return response.data;
     } catch (error) {
-        throw error?.error || `An error occurred while attempting to toggle like ${post_id}`;
+        throw (
+            error.response?.data?.error ||
+            `An error occurred while attempting to toggle like ${post_id}`
+        );
     }
 };
 
 export const getUserPosts = async (username) => {
     try {
-        return (await fetchRequest(`/posts/${username}`)).data;
+        const response = await apiClient.get(`posts/${username}`);
+        return response.data.data;
     } catch (error) {
-        throw error?.error || `An error occurred while fetching posts for ${username}`;
+        throw (
+            error.response?.data?.error ||
+            `An error occurred while attempting to toggle follow ${username}`
+        );
     }
 };
 
@@ -104,40 +132,45 @@ export const createPost = async (postData) => {
     const formData = new FormData();
     formData.append("image", postData.image);
     formData.append("content", postData.content);
-
     try {
-        const response = await fetch(`${BASE_URL}/create_post/`, {
-            method: "POST",
-            body: formData,
-            credentials: "include",
+        const response = await apiClient.post("create_post/", formData, {
+            headers: {
+                "Content-Type": "multipart/form-data", 
+            },
         });
-        if (!response.ok) {
-            const error = await response.json();
-            throw error;
-        }
-        return response.json();
+        return response.data;
     } catch (error) {
-        throw error?.error || "An error occurred while creating the post";
+        throw (
+            error.response?.data?.error ||
+            `An error occurred while attempting to post`
+        );
     }
 };
 
 export const fetchFeed = async (val) => {
-    try {
-        const response = await fetchRequest(`/feed/?page=${val}`);
-        return response.results;
-    } catch (error) {
-        if (error.detail === "Invalid page.") {
-            return [];
+    try{
+        
+        const response  = await apiClient.get(`feed/?page=${val}`)
+        return response.data.results
+    }catch(error){
+        if (error.response.data.detail === "Invalid page."){
+            return []
         }
-        throw "An error occurred while fetching feed";
+        throw(
+            "An error occurred while fetching feed"
+        )
     }
-};
+}
 
 export const SearchUserApi = async (query) => {
     try {
-        return await fetchRequest(`/search_user/?search=${query}`);
+        const response = await apiClient.get(`search_user/?search=${query}`);
+        return response.data;
     } catch (error) {
-        throw error?.error || `An error occurred while searching for ${query}`;
+        throw (
+            error.response?.data?.error ||
+            `An error occurred while searching for ${query}`
+        );
     }
 };
 
@@ -148,26 +181,29 @@ export const updateUserData = async (userData) => {
     formData.append("first_name", userData.first_name);
     formData.append("last_name", userData.last_name);
 
-    try {
-        const response = await fetch(`${BASE_URL}/edit_profile/`, {
-            method: "PATCH",
-            body: formData,
-            credentials: "include",
+    try{
+        const response = await apiClient.patch("edit_profile/", formData, {
+            headers: {
+                "Content-Type": "multipart/form-data", 
+            },
         });
-        if (!response.ok) {
-            const error = await response.json();
-            throw error;
-        }
-        return response.json();
-    } catch (error) {
-        throw error?.error || "An error occurred while updating user data";
+        return response.data
+    }catch(error){
+        throw (
+            error.response?.data?.error ||
+            "An error occurred while updating user data"
+        );
     }
-};
+}
 
 export const singlePost = async (post_id) => {
     try {
-        return await fetchRequest(`/post/${post_id}`);
-    } catch (error) {
-        throw error?.error || "An error occurred while fetching post";
+        const response = await apiClient.get(`post/${post_id}`)
+        return response.data
+    } catch(error){
+        throw (
+            error.response?.data?.error ||
+            "An error occurred while fetching post"
+        )
     }
-};
+}
