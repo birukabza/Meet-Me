@@ -15,8 +15,6 @@ load_dotenv(find_dotenv())
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
@@ -26,7 +24,7 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
 
 
 # Application definition
@@ -41,21 +39,20 @@ INSTALLED_APPS = [
     "corsheaders",
     "rest_framework",
     "rest_framework_simplejwt",
-    'django_filters',
+    "django_filters",
     "cloudinary",
     "core.apps.CoreConfig",
 ]
 
 REST_FRAMEWORK = {
-    "DEFAULT_AUTHENTICATION_CLASSES": (
-        "core.authenticate.CustomHeaderAuthentication",
-    ),
+    "DEFAULT_AUTHENTICATION_CLASSES": ("core.authenticate.CustomHeaderAuthentication",),
 }
 
 # Jwt
 
 
 SIMPLE_JWT = {
+    "ALGORITHM": "HS256",
     "USER_ID_FIELD": "user_id",
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=15),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
@@ -159,7 +156,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_ROOT = BASE_DIR/'staticfiles'
+STATIC_ROOT = BASE_DIR / "staticfiles"
 STATIC_URL = "static/"
 
 # Default primary key field type
@@ -168,7 +165,12 @@ STATIC_URL = "static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # cloudinary config
 cloudinary.config(
-    cloud_name = os.getenv("CLOUDINARY_CLOUD_NAME"),
-    api_key = os.getenv("CLOUDINARY_API_KEY"),
-    api_secret = os.getenv("CLOUDINARY_API_SECRET")
+    cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME"),
+    api_key=os.getenv("CLOUDINARY_API_KEY"),
+    api_secret=os.getenv("CLOUDINARY_API_SECRET"),
 )
+
+# Security
+SECURE_SSL_REDIRECT = False
+
+

@@ -42,3 +42,22 @@ DATABASES = {
         conn_max_age=600
     )
 }
+
+# Security
+
+
+# SSL redirect
+SECURE_SSL_REDIRECT = True
+
+# Cross-site Scripting (XSS)
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+
+# HTTP Strict Transport Security (HSTS)(Preventing man-in-the-middle attacks)
+SECURE_HSTS_SECONDS = 86400
+SECURE_HSTS_PRELOAD = True
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+
+# Cross-site request forgery (CSRF) protection
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
