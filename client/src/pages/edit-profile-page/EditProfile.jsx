@@ -21,6 +21,7 @@ function EditProfile() {
     const [updatedData, setUpdatedData] = useState(storedData);
     const [imageUrl, setImageUrl] = useState(null);
     const [imageBlob, setImageBlob] = useState(null);
+    const [isSaving, setIsSaving] = useState(false);
 
     const fileInputRef = useRef(null);
 
@@ -68,6 +69,7 @@ function EditProfile() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setIsSaving(true);
         try {
 
             const response = await updateUserData({ ...updatedData, avatar: imageBlob || "" });
@@ -79,6 +81,8 @@ function EditProfile() {
         } catch (error) {
             console.log(error);
             alert("Unable to update your profile!")
+        }finally{
+            setIsSaving(false)
         }
     };
 
@@ -164,7 +168,7 @@ function EditProfile() {
                 </div>
 
                 <div className="flex justify-end">
-                    <CustomButton type="submit" width="w-24">Save</CustomButton>
+                    <CustomButton type="submit" width="w-24" disabled={isSaving}>{isSaving? "Saving...":"Save"}</CustomButton>
                 </div>
             </form>
         </div>

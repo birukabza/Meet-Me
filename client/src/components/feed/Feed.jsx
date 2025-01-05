@@ -2,12 +2,14 @@ import { useEffect, useState } from 'react';
 import { Masonry } from 'masonic';
 import { fetchFeed } from '../../api/userApi';
 import Post from '../post/Post';
+import Loading from '../Loading/Loading'; // Import your loading component
 
 const Feed = () => {
   const [items, setItems] = useState([]);
   const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
+  const [isFirstPageLoaded, setIsFirstPageLoaded] = useState(false); 
 
   const loadMoreData = async () => {
     if (isLoading || !hasMore) return;
@@ -22,6 +24,9 @@ const Feed = () => {
         }));
         setItems(prevItems => [...prevItems, ...itemsWithRandomHeight]);
         setPage(prevPage => prevPage + 1);
+        if (!isFirstPageLoaded) {
+          setIsFirstPageLoaded(true); 
+        }
       } else {
         setHasMore(false);
       }
@@ -53,16 +58,22 @@ const Feed = () => {
   return (
     <div className="feed-container py-6 px-4">
       <div className="masonry-container max-w-7xl mx-auto">
-        {items.length > 0 ? (
-          <Masonry
-            items={items}
-            columnWidth={300}
-            columnGutter={20}
-            overscanBy={150}
-            render={renderItem}
-          />
+        {!isFirstPageLoaded ? (
+          <div className="flex justify-center items-center h-full">
+            <Loading /> 
+          </div>
         ) : (
-          <p className="text-white text-center">No posts to display</p>
+          items.length > 0 ? (
+            <Masonry
+              items={items}
+              columnWidth={300}
+              columnGutter={20}
+              overscanBy={150}
+              render={renderItem}
+            />
+          ) : (
+            <p className="text-white text-center">No posts to display</p>
+          )
         )}
       </div>
       <div className="text-center py-6">

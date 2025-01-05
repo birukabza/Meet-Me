@@ -86,7 +86,7 @@ const CreatePostModal = ({ onClose, onCreateNewPost }) => {
                         <img
                             src={imageUrl}
                             alt="Preview"
-                            className="w-full h-full object-cover mb-4 rounded"
+                            className="size-72 object-cover mb-4 rounded"
                         />
                     ) : (
                         <>

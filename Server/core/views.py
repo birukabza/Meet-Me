@@ -532,29 +532,3 @@ class CustomTokenRefreshView(TokenRefreshView):
                 },
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
-
-
-@api_view(["GET"])
-@permission_classes([IsAuthenticated])
-def logout(request):
-    try:
-        res = Response(
-            {
-                "success": True,
-                "message": "Logout Successful",
-            },
-            status=status.HTTP_200_OK,
-        )
-        res.delete_cookie("access_token", path="/",  samesite="None")    
-        res.delete_cookie("refresh_token", path="/",  samesite="None")
-        return res
-    except Exception as e:
-        logger.error(f"Unexpected error: {e}")
-        return Response(
-            {
-                "success": False,
-                "error": "internal_server_error",
-                "detail": "An unexpected error occurred while trying to logout.",
-            },
-            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-        )

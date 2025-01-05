@@ -10,12 +10,21 @@ const SignIn = () => {
 
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const { authSignIn } = useContext(AuthContext)
 
 
     const handleSignIn = async (e) => {
         e.preventDefault();
-        await authSignIn(username, password);
+        setIsSubmitting(true);
+        try{
+
+            await authSignIn(username, password);
+        }catch(error){
+            console.log("error while signing up", error)
+        }finally{
+            setIsSubmitting(false);
+        }
     };
     
 
@@ -50,7 +59,7 @@ const SignIn = () => {
                         />
                         </label>
                     </div>
-                    <CustomButton type="submit" width="w-32">Sign In</CustomButton>
+                    <CustomButton type="submit" width="w-32" disabled={isSubmitting}>{ isSubmitting? "Signing In..." : "Sign In"}</CustomButton>
                 </form>
                 <div className="mt-4 text-center">
                     <p className="text-sm text-gray-600">
