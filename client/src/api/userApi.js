@@ -1,11 +1,15 @@
-import axios from "axios";
-import {SERVER_URL} from "../constants/constants"
-const BASE_URL = `${SERVER_URL}/api`;
 
-const apiClient = axios.create({
-    baseURL: BASE_URL,
-    withCredentials: true,
+import { getAccessToken, getRefreshToken, saveTokens, removeTokens } from "./tokenHelpers";
+import { apiClient } from "./axiosConfig";
+
+apiClient.interceptors.request.use((config) => {
+    const accessToken = getAccessToken();
+    if (accessToken) {
+        config.headers.Authorization = `Bearer ${accessToken}`;
+    }
+    return config;
 });
+
 apiClient.interceptors.response.use(
     (response) => response,
     async (error) => {
@@ -13,11 +17,17 @@ apiClient.interceptors.response.use(
 
         if (error.response?.status === 401 && !originalRequest._retry) {
             originalRequest._retry = true;
+            const refreshToken = getRefreshToken();
 
             try {
-                await apiClient.post("/token/refresh/");
+                const response = await apiClient.post(`/token/refresh/`, { refresh: refreshToken });
+                const { access_token } = response.data;
+                saveTokens(access_token, refreshToken);
+
+                originalRequest.headers.Authorization = `Bearer ${access_token}`;
                 return apiClient(originalRequest);
             } catch (refreshError) {
+                removeTokens();
                 return Promise.reject(refreshError);
             }
         }
@@ -40,19 +50,29 @@ export const fetchUserProfile = async (username) => {
 
 export const signInApi = async (username, password) => {
     try {
-        const response = await apiClient.post("token/", {
-            username,
-            password,
-        });
+        const response = await apiClient.post("token/", { username, password });
+        const { access_token, refresh_token } = response.data;
+        saveTokens(access_token, refresh_token);
         return response.data;
     } catch (error) {
         if (error.response && error.response.status === 401) {
             return { success: false, message: "Invalid username or password" };
         }
-        console.log(error, "Error while logging in");
+        console.error("Error while logging in:", error);
         throw error;
     }
 };
+
+export const signOutApi = async () => {
+    try {
+        removeTokens();
+    } catch (error) {
+        throw (
+            error.response?.data?.error || "An error occurred while logging out"
+        );
+    }
+};
+
 
 export const signUpApi = async (userData) => {
     try {
@@ -70,16 +90,6 @@ export const signUpApi = async (userData) => {
     }
 };
 
-export const signOutApi = async () => {
-    try {
-        const response = await apiClient.get("logout/");
-        return response.data;
-    } catch (error) {
-        throw (
-            error.response?.data?.error || "An error occurred while logging out"
-        );
-    }
-}
 
 export const getAuth = async () => {
     try {

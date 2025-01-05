@@ -420,11 +420,7 @@ class CustomTokenObtainPairView(TokenObtainPairView):
             response = super().post(request, *args, **kwargs)
 
             tokens = response.data
-
-            access_token = tokens.get("access")
-            refresh_token = tokens.get("refresh")
             username = request.data.get("username")
-            
 
             try:
                 user = UserProfile.objects.get(username=username)
@@ -457,25 +453,10 @@ class CustomTokenObtainPairView(TokenObtainPairView):
                     "success": True,
                     "message": "Login Successful",
                     "user": serializer.data,
-                    
+                    "access_token": tokens.get("access"),
+                    "refresh_token": tokens.get("refresh"),
                 },
                 status=status.HTTP_200_OK,
-            )
-            res.set_cookie(
-                key="access_token",
-                value=access_token,
-                httponly=True,
-                samesite="None",
-                secure=True,
-                path="/",
-            )
-            res.set_cookie(
-                key="refresh_token",
-                value=refresh_token,
-                httponly=True,
-                samesite="None",
-                secure=True,
-                path="/",
             )
             return res
 
@@ -504,9 +485,8 @@ class CustomTokenObtainPairView(TokenObtainPairView):
 
 class CustomTokenRefreshView(TokenRefreshView):
     def post(self, request, *args, **kwargs):
-
         try:
-            refresh_token = request.COOKIES.get("refresh_token")
+            refresh_token = request.data.get("refresh")
             if not refresh_token:
                 return Response(
                     {"success": False, "error": "Refresh token not provided"},
@@ -514,30 +494,16 @@ class CustomTokenRefreshView(TokenRefreshView):
                 )
 
             request.data["refresh"] = refresh_token
-
             response = super().post(request, *args, **kwargs)
-            tokens = response.data
 
-            new_access_token = tokens.get("access")
-
-            res = Response(
+            return Response(
                 {
                     "success": True,
                     "message": "Token refreshed successfully",
+                    "access_token": response.data.get("access"),
                 },
                 status=status.HTTP_200_OK,
             )
-
-            res.set_cookie(
-                key="access_token",
-                value=new_access_token,
-                httponly=True,
-                secure=True,
-                samesite="None",
-                path="/",
-            )
-
-            return res
         except InvalidToken as e:
             return Response(
                 {
@@ -566,6 +532,7 @@ class CustomTokenRefreshView(TokenRefreshView):
                 },
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
+
 
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
