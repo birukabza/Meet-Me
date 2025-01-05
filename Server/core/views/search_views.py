@@ -26,5 +26,5 @@ class SearchUserView(ListAPIView):
 
     def get_queryset(self):
         if self.request.query_params.get("search"):
-            return UserProfile.objects.all().order_by("username")
+            return UserProfile.objects.all()
         return UserProfile.objects.none()
