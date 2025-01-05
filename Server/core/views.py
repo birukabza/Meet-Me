@@ -171,7 +171,7 @@ class TogglePostLike(APIView):
             )
 
         except Post.DoesNotExist:
-            return NotFound(
+            raise NotFound(
                 {
                     "success": False,
                     "error": "post_not_found",
@@ -334,7 +334,7 @@ class SearchUserView(ListAPIView):
 
     def get_queryset(self):
         if self.request.query_params.get("search"):
-            return UserProfile.objects.all()
+            return UserProfile.objects.all().order_by("username")
         return UserProfile.objects.none()
 
 class EditProfileView(APIView):
@@ -355,7 +355,6 @@ class EditProfileView(APIView):
                     },
                     status=status.HTTP_200_OK,
                 )
-            print(serializer.errors)
             return Response(
                 {
                     "success": False,
@@ -397,9 +396,6 @@ class SinglePostView(APIView):
             },
             status=status.HTTP_200_OK
         )
-
-
-
         
 
 class AuthStatusView(APIView):
@@ -482,38 +478,49 @@ class CustomTokenObtainPairView(TokenObtainPairView):
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
 
+from rest_framework_simplejwt.views import TokenRefreshView
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 class CustomTokenRefreshView(TokenRefreshView):
     def post(self, request, *args, **kwargs):
+        refresh_token = request.data.get("refresh")
+        if not refresh_token:
+            return Response(
+                {
+                    "success": False,
+                    "error": "Refresh token not provided",
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        serializer = self.get_serializer(data=request.data)
         try:
-            refresh_token = request.data.get("refresh")
-            if not refresh_token:
-                return Response(
-                    {"success": False, "error": "Refresh token not provided"},
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
+            serializer.is_valid(raise_exception=True)
 
-            request.data["refresh"] = refresh_token
-            response = super().post(request, *args, **kwargs)
-
+            access_token = serializer.validated_data.get('access')
             return Response(
                 {
                     "success": True,
                     "message": "Token refreshed successfully",
-                    "access_token": response.data.get("access"),
+                    "access_token": access_token,
                 },
                 status=status.HTTP_200_OK,
             )
-        except InvalidToken as e:
-            return Response(
-                {
-                    "success": False,
-                    "error": "invalid_token",
-                    "detail": str(e),
-                },
-                status=status.HTTP_401_UNAUTHORIZED,
-            )
         except TokenError as e:
+            if isinstance(e, InvalidToken):
+                return Response(
+                    {
+                        "success": False,
+                        "error": "invalid_token",
+                        "detail": str(e),
+                    },
+                    status=status.HTTP_401_UNAUTHORIZED,
+                )
             return Response(
                 {
                     "success": False,
@@ -532,3 +539,4 @@ class CustomTokenRefreshView(TokenRefreshView):
                 },
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
+
