@@ -16,6 +16,8 @@ from .views.post_views import (
     GetUserPostApiView,
     FeedView,
     SinglePostView,
+    DeletePostAPIView,
+    UpdatePostAPIView,
 )
 from .views.profile_views import (
     UserProfileApiView,
@@ -46,7 +48,9 @@ urlpatterns = [
     path("feed/", FeedView.as_view(), name="feed"),
     path("search_user/", SearchUserView.as_view(), name="search_user"),
     path("edit_profile/", EditProfileView.as_view(), name="edit_profile"),
-    path("post/<int:post_id>", SinglePostView.as_view(), name="single_post_view")
+    path("post/<int:post_id>/", SinglePostView.as_view(), name="single_post_view"),
+    path("post_delete/<int:post_id>/", DeletePostAPIView.as_view(), name="post_delete"),
+    path("post_update/<int:post_id>/", UpdatePostAPIView.as_view(), name="post_update"),
 ]
 
 if settings.DEBUG:

@@ -209,7 +209,7 @@ export const updateUserData = async (userData) => {
 
 export const getPostById = async (post_id) => {
     try {
-        const response = await apiClient.get(`post/${post_id}`)
+        const response = await apiClient.get(`post/${post_id}/`)
         return response.data
     } catch(error){
         throw (

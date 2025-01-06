@@ -188,3 +188,108 @@ class SinglePostView(APIView):
             },
             status=status.HTTP_200_OK
         )
+    
+class DeletePostAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request, post_id):
+        try:
+            post = Post.objects.get(post_id=post_id)
+
+            if post.user != request.user:
+                return Response(
+                    {
+                        "success": False,
+                        "error": "forbidden",
+                        "detail": "You do not have permission to delete this post.",
+                    },
+                    status=status.HTTP_403_FORBIDDEN,
+                )
+
+            post.delete()
+
+            return Response(
+                {
+                    "success": True,
+                    "detail": f"Post with ID {post_id} has been successfully deleted.",
+                },
+                status=status.HTTP_204_NO_CONTENT,
+            )
+
+        except Post.DoesNotExist:
+            raise NotFound(
+                {
+                    "success": False,
+                    "error": "post_not_found",
+                    "detail": f"Post with ID {post_id} does not exist.",
+                }
+            )
+        except Exception as e:
+            logger.error(f"Unexpected error in DeletePostAPIView: {str(e)}")
+            return Response(
+                {
+                    "success": False,
+                    "error": "internal_server_error",
+                    "detail": "An unexpected error occurred while deleting the post.",
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+class UpdatePostAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def put(self, request, post_id):
+        try:
+            post = Post.objects.get(post_id=post_id)
+
+            if post.user != request.user:
+                return Response(
+                    {
+                        "success": False,
+                        "error": "forbidden",
+                        "detail": "You do not have permission to update this post.",
+                    },
+                    status=status.HTTP_403_FORBIDDEN,
+                )
+
+            content = request.data.get('content')
+            if content:
+                post.content = content
+                post.save()
+
+                serializer = PostSerializer(post)
+
+                return Response(
+                    {
+                        "success": True,
+                        "data": serializer.data,
+                    },
+                    status=status.HTTP_200_OK,
+                )
+            else:
+                return Response(
+                    {
+                        "success": False,
+                        "error": "content_required",
+                        "detail": "Content is required to update the post.",
+                    },
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+        except Post.DoesNotExist:
+            raise NotFound(
+                {
+                    "success": False,
+                    "error": "post_not_found",
+                    "detail": f"Post with ID {post_id} does not exist.",
+                }
+            )
+        except Exception as e:
+            logger.error(f"Unexpected error in UpdatePostAPIView: {str(e)}")
+            return Response(
+                {
+                    "success": False,
+                    "error": "internal_server_error",
+                    "detail": "An unexpected error occurred while updating the post.",
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
