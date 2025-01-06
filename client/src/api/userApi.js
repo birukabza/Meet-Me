@@ -206,7 +206,8 @@ export const updateUserData = async (userData) => {
     }
 }
 
-export const singlePost = async (post_id) => {
+
+export const getPostById = async (post_id) => {
     try {
         const response = await apiClient.get(`post/${post_id}`)
         return response.data

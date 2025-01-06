@@ -6,6 +6,7 @@ import SignIn from "../pages/sign-in-page/SignIn";
 import SignUp from "../pages/sign-up-page/SignUp";
 import HomePage from "../pages/home-page/HomePage";
 import EditProfile from "../pages/edit-profile-page/EditProfile";
+import PostDetail from "../components/post-detail/PostDetail";
 
 import PrivateRoute from "../components/private-route/PrivateRoute";
 
@@ -51,6 +52,10 @@ const router = createBrowserRouter([
           </PrivateRoute>
         ),
       },
+      {
+        path:"post/:postId", 
+        element:<PostDetail />,
+      }
     ],
   },
 ]);

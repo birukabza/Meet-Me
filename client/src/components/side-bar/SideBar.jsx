@@ -17,7 +17,7 @@ const SideBar = () => {
   const [searchResults, setSearchResults] = useState([]);
   const searchRef = useRef(null);
   const searchIconRef = useRef(null);
-  const { isAuthenticated, currentUsername } = useContext(AuthContext);
+  const { isAuthenticated, isAuthLoading, currentUsername} = useContext(AuthContext);
   const redirectTo = isAuthenticated ? `profile/${currentUsername}` : "/signin";
 
   useEffect(() => {
@@ -173,7 +173,7 @@ const SideBar = () => {
             text={!isSearchOpen ? "Profile" : ""}
           />
         </Link>
-        {!isAuthenticated && (
+        {!isAuthLoading && !isAuthenticated && (
           <Link to="/signin">
             <div className="bg-red-600 w-28 mt-8 h-10 rounded-lg flex justify-center items-center hover:bg-red-500">
               <span className="text-center">Sign in</span>

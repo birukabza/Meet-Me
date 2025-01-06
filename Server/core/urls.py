@@ -15,6 +15,7 @@ from .views.post_views import (
     TogglePostLike,
     GetUserPostApiView,
     FeedView,
+    SinglePostView,
 )
 from .views.profile_views import (
     UserProfileApiView,
@@ -45,6 +46,7 @@ urlpatterns = [
     path("feed/", FeedView.as_view(), name="feed"),
     path("search_user/", SearchUserView.as_view(), name="search_user"),
     path("edit_profile/", EditProfileView.as_view(), name="edit_profile"),
+    path("post/<int:post_id>", SinglePostView.as_view(), name="single_post_view")
 ]
 
 if settings.DEBUG:
