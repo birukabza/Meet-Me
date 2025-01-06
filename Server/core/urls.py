@@ -38,7 +38,7 @@ urlpatterns = [
         ToggleFollowView.as_view(),
         name="toggle_follow",
     ),
-    path("posts/<str:username>", GetUserPostApiView.as_view(), name="user_posts"),
+    path("posts/<str:username>/", GetUserPostApiView.as_view(), name="user_posts"),
     path(
         "toggle_like_post/<int:post_id>/",
         TogglePostLike.as_view(),

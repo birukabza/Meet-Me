@@ -128,7 +128,7 @@ export const toggleLike = async (post_id) => {
 
 export const getUserPosts = async (username) => {
     try {
-        const response = await apiClient.get(`posts/${username}`);
+        const response = await apiClient.get(`posts/${username}/`);
         return response.data.data;
     } catch (error) {
         throw (
