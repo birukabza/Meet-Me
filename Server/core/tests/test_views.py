@@ -1,7 +1,7 @@
-from rest_framework.test import APIClient
+from rest_framework.test import APIClient, APITestCase
 from rest_framework import status
 from django.test import TestCase
-from core.models import UserProfile, Post
+from core.models import UserProfile, Post, Comment
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.urls import reverse
 
@@ -430,4 +430,81 @@ class CustomTokenRefreshViewTest(TestCase):
         response = self.client.post('/api/token/refresh/', {"refresh": "Invalid"})
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn('error', response.data)
+
+
+class CommentTests(APITestCase):
+    def setUp(self):
+        self.user = UserProfile.objects.create_user(
+            username="testuser", password="password123"
+        )
+        self.post = Post.objects.create(content="Post content", user=self.user)
+        self.create_comment_url = reverse("create_comment", args=[self.post.post_id])
+        self.get_post_comments_url = reverse("get_post_comments", args=[self.post.post_id])
         
+    def test_create_comment(self):
+        self.client.force_authenticate(user=self.user)  
+        data = {"content": "This is a comment"}
+        response = self.client.post(self.create_comment_url, data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertIn("data", response.data)  
+
+    def test_create_comment_without_auth(self):
+        data = {"content": "This is a comment"}
+        response = self.client.post(self.create_comment_url, data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_get_post_comments(self):
+        Comment.objects.create(content="First comment", user=self.user, post=self.post)
+        response = self.client.get(self.get_post_comments_url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data["data"]), 1)
+
+    def test_get_post_comments_not_found(self):
+        non_existent_post_url = reverse("get_post_comments", args=[999])
+        response = self.client.get(non_existent_post_url)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_get_comment(self):
+        comment = Comment.objects.create(content="This is a comment", user=self.user, post=self.post)
+        get_comment_url = reverse("get_comment", args=[comment.comment_id])
+        response = self.client.get(get_comment_url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["data"]["content"], "This is a comment")
+
+    def test_get_comment_not_found(self):
+        response = self.client.get(reverse("get_comment", args=[999]))
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_update_comment(self):
+        comment = Comment.objects.create(content="Old content", user=self.user, post=self.post)
+        data = {"content": "Updated content"}
+        update_comment_url = reverse("update_comment", args=[comment.comment_id])
+        self.client.force_authenticate(user=self.user)
+        response = self.client.patch(update_comment_url, data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["data"]["content"], "Updated content")
+
+    def test_update_comment_not_owner(self):
+        comment = Comment.objects.create(content="Old content", user=self.user, post=self.post)
+        other_user = UserProfile.objects.create_user(username="otheruser", password="password123")
+        data = {"content": "Updated content"}
+        update_comment_url = reverse("update_comment", args=[comment.comment_id])
+        self.client.force_authenticate(user=other_user)
+        response = self.client.patch(update_comment_url, data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_delete_comment(self):
+        comment = Comment.objects.create(content="Comment to delete", user=self.user, post=self.post)
+        delete_comment_url = reverse("delete_comment", args=[comment.comment_id])
+        self.client.force_authenticate(user=self.user)
+        response = self.client.delete(delete_comment_url)
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertFalse(Comment.objects.filter(comment_id=comment.comment_id).exists())
+
+    def test_delete_comment_not_owner(self):
+        comment = Comment.objects.create(content="Comment to delete", user=self.user, post=self.post)
+        other_user = UserProfile.objects.create_user(username="otheruser", password="password123")
+        delete_comment_url = reverse("delete_comment", args=[comment.comment_id])
+        self.client.force_authenticate(user=other_user)
+        response = self.client.delete(delete_comment_url)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)

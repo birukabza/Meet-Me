@@ -40,11 +40,6 @@ class Post(models.Model):
     image = CloudinaryField("image", blank=False, null=False)
     likes = models.ManyToManyField(UserProfile, related_name="liked_posts", blank=True)
 
-    # over riding the built in save method
-    def save(self, *args, **kwargs):
-        print("image being saved: " , self.image)
-        self.full_clean()
-        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"Post by {self.user.username} at {self.created_at}"
@@ -54,3 +49,26 @@ class Post(models.Model):
         indexes = [
             models.Index(fields=['created_at'])
         ]
+
+
+class Comment(models.Model):
+    comment_id = models.AutoField(primary_key=True)
+    content = models.CharField(max_length=600, blank=False)
+    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name="comments")
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="comments")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    likes = models.ManyToManyField(UserProfile, related_name="liked_comments", blank=True)
+
+
+
+    def __str__(self):
+        return f"Comment by {self.user.username} on {self.post}"
+
+    class Meta:
+        ordering = ["-created_at"]
+        indexes = [
+            models.Index(fields=['created_at'])
+        ]
+
+

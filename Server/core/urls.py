@@ -19,6 +19,14 @@ from .views.post_views import (
     DeletePostAPIView,
     UpdatePostAPIView,
 )
+
+from .views.comment_views import (
+    CreateCommentAPIView,
+    GetPostCommentsAPIView,
+    GetCommentAPIView,
+    DeleteCommentAPIView,
+    UpdateCommentAPIView,
+)
 from .views.profile_views import (
     UserProfileApiView,
     ToggleFollowView,
@@ -51,6 +59,29 @@ urlpatterns = [
     path("post/<int:post_id>/", SinglePostView.as_view(), name="single_post_view"),
     path("post_delete/<int:post_id>/", DeletePostAPIView.as_view(), name="post_delete"),
     path("post_update/<int:post_id>/", UpdatePostAPIView.as_view(), name="post_update"),
+    path(
+        "create_comment/<int:post_id>/",
+        CreateCommentAPIView.as_view(),
+        name="create_comment",
+    ),
+    path(
+        "get_post_comments/<int:post_id>/",
+        GetPostCommentsAPIView.as_view(),
+        name="get_post_comments",
+    ),
+    path(
+        "get_comment/<int:comment_id>/", GetCommentAPIView.as_view(), name="get_comment"
+    ),
+    path(
+        "delete_comment/<int:comment_id>/",
+        DeleteCommentAPIView.as_view(),
+        name="delete_comment",
+    ),
+    path(
+        "update_comment/<int:comment_id>/",
+        UpdateCommentAPIView.as_view(),
+        name="update_comment",
+    ),
 ]
 
 if settings.DEBUG:

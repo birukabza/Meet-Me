@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import UserProfile, Post
+from .models import UserProfile, Post, Comment
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
@@ -79,7 +79,6 @@ class PostSerializer(serializers.ModelSerializer):
             "image",
             "created_at",
             "updated_at",
-            "likes",
             "likes_count",
         ]
         read_only_fields = ["likes", "likes_count", "is_liked"]
@@ -89,6 +88,41 @@ class PostSerializer(serializers.ModelSerializer):
 
     def get_username(self, obj):
         return obj.user.username
+
+class CommentSerializer(serializers.ModelSerializer):
+    likes_count = serializers.SerializerMethodField()
+    username = serializers.SerializerMethodField() 
+    post_id = serializers.SerializerMethodField()
+    created_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
+    updated_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
+
+    class Meta:
+        model = Comment
+        fields = [
+            "comment_id",
+            "username",
+            "post_id",
+            "content",
+            "created_at",
+            "updated_at",
+            "likes_count",
+        ]
+    
+    def get_likes_count(self, obj):
+        return obj.likes.count()
+
+    def get_username(self, obj):
+        return obj.user.username
+    
+    def get_post_id(self, obj):
+        return obj.post.post_id
+    
+    def validate_content(self, value):
+        if not value.strip():
+            raise serializers.ValidationError("Content cannot be empty.")
+        return value
+
+
     
     
     

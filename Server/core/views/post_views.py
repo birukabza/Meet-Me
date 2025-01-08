@@ -43,12 +43,12 @@ class GetUserPostApiView(APIView):
             )
 
         except Exception as e:
-            logger.error(f"An error occurred while serializing the user data: {str(e)}")
+            logger.error(f"An error occurred while serializing the post data: {str(e)}")
             return Response(
                 {
                     "success": False,
                     "error": "serialization_error",
-                    "detail": f"An error occurred while serializing the user data: {str(e)}",
+                    "detail": f"An error occurred while serializing the comments data: {str(e)}",
                 },
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
@@ -237,7 +237,7 @@ class DeletePostAPIView(APIView):
 class UpdatePostAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def put(self, request, post_id):
+    def patch(self, request, post_id):
         try:
             post = Post.objects.get(post_id=post_id)
 
